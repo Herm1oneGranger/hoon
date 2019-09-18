@@ -18,7 +18,7 @@
 *.ps text eol=crlf
 # Git will always convert line endings to `CRLF` on checkout. You should use this for files that must keep `CRLF` endings, even on OSX or Linux.
 
-# Declare files that will always have CRLF line endings on checkout.
+# Declare files that will always have LF line endings on checkout.
 # * text eol=lf
 *.sh text eol=lf
 *.nsh text eol=lf
