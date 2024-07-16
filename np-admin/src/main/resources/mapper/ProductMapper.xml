@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.web.mapper.ProductMapper">
+
+    <resultMap id="ProductResult" type="com.bosch.web.domain.vo.ProductVO">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="mnr" column="mnr" jdbcType="VARCHAR"/>
+            <result property="fd" column="fd" jdbcType="VARCHAR"/>
+            <result property="sn" column="sn" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="CHAR"/>
+            <result property="verifyStatus" column="verify_status" jdbcType="CHAR"/>
+            <result property="printId" column="print_id" jdbcType="INTEGER"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="ProductVoResult" type="com.bosch.web.domain.vo.ProductVO" extends="ProductResult">
+        <collection  property="verifyRecords"   javaType="java.util.List"  resultMap="VerifyRecordVoResult" />
+    </resultMap>
+
+    <resultMap id="VerifyRecordVoResult" type="com.bosch.web.domain.vo.VerifyRecordVO">
+        <id property="id" column="verify_record_id" jdbcType="INTEGER"/>
+        <result property="appId" column="app_id" jdbcType="VARCHAR"/>
+        <result property="position" column="position" jdbcType="VARCHAR"/>
+        <result property="checkedTime" column="checked_time" jdbcType="TIMESTAMP"/>
+        <result property="checkedResult" column="checked_result" jdbcType="VARCHAR"/>
+        <result property="province" column="province" jdbcType="VARCHAR"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="selectProduct">
+        select id,name,mnr,fd,sn,status,verify_status,print_id,remark,create_by,create_time,update_by,
+        update_time from p_product u
+    </sql>
+
+    <sql id="selectProductVo">
+        select u.id,u.name,u.mnr,u.fd,u.sn,u.status,u.verify_status,u.print_id,u.remark,u.create_by,u.create_time,
+               u.update_by,u.update_time,d.id as verify_record_id,d.user_name,d.telephone,d.app_id,d.gender,d.position,
+               d.user_phone_os,d.checked_time,d.checked_result,d.province,d.city,d.mnr,d.fd,d.sn
+        from p_product u
+            left join p_verify_record d on u.id = d.product_id
+    </sql>
+
+    <insert id="insertProduct">
+        insert into p_product(
+        <if test="name != null and name != ''">name,</if>
+        <if test="mnr != null and mnr != ''">mnr,</if>
+        <if test="fd != null and fd != ''">fd,</if>
+        <if test="sn != null and sn != ''">sn,</if>
+        <if test="status != null and status != ''">status,</if>
+        <if test="printId != null and printId != ''">print_id,</if>
+        <if test="remark != null and remark != ''">remark,</if>
+        <if test="createBy != null and createBy != ''">create_by,</if>
+        create_time
+        )values(
+        <if test="name != null and name != ''">#{name},</if>
+        <if test="mnr != null and mnr != ''">#{mnr},</if>
+        <if test="fd != null and fd != ''">#{fd},</if>
+        <if test="sn != null and sn != ''">#{sn},</if>
+        <if test="status != null and status != ''">#{status},</if>
+        <if test="printId != null and printId != ''">#{printId},</if>
+        <if test="remark != null and remark != ''">#{remark},</if>
+        <if test="createBy != null and createBy != ''">#{createBy},</if>
+        sysdate()
+        )
+    </insert>
+
+
+    <insert id="insertProducts" parameterType="java.util.List">
+        insert IGNORE into p_product(
+        name,
+        mnr,
+        fd,
+        sn,
+        print_id,
+        remark,
+        create_by,
+        create_time
+        )values
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.name},
+            #{item.mnr},
+            #{item.fd},
+            #{item.sn},
+            #{item.printId},
+            #{item.remark},
+            #{item.createBy},
+            sysdate()
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectProductList" parameterType="ProductDTO" resultMap="ProductResult">
+        <include refid="selectProduct"/>
+
+        <where>
+            <if test="id != null  and id != 0"> u.id = #{id}</if>
+            <if test="name != null  and name != ''"> and u.name like concat('%', #{name}, '%')</if>
+            <if test="mnr != null  and mnr != ''"> and u.mnr like concat('%', #{mnr}, '%')</if>
+            <if test="fd != null  and fd != ''"> and u.fd like concat('%', #{fd}, '%')</if>
+            <if test="sn != null  and sn != ''"> and u.sn = #{sn}</if>
+            <if test="status != null  and status != ''"> and u.status = #{status}</if>
+            <if test="verifyStatus != null  and verifyStatus != ''"> and u.verify_status = #{verifyStatus}</if>
+            <if test="printId != null  and printId != ''"> and u.print_id = #{printId}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+    </select>
+
+
+    <select id="selectProductListNoMnr" parameterType="ProductDTO" resultMap="ProductResult">
+        select u.id,u.name,u.mnr,u.fd,u.sn, u.STATUS,u.verify_status,u.print_id,u.remark,u.create_by,u.create_time,u.update_by,
+        u.update_time from p_product u
+        LEFT JOIN sys_user s ON u.create_by = s.user_name
+        LEFT JOIN sys_dept d ON s.dept_id =d.dept_id
+        where 1=1
+        <if test="depts != null and depts != ''">
+           and (d.dept_id IN (
+            SELECT dept_id
+            FROM sys_dept
+            WHERE 1=1
+
+            <![CDATA[
+            and d.dept_name in (
+            ]]>
+            <foreach collection="depts.split(',')" item="dept" separator=",">
+                #{dept}
+            </foreach>
+            <![CDATA[
+            )
+            ]]>
+            ))
+        </if>
+
+        <if test="id != null  and id != 0">and u.id = #{id}</if>
+        <if test="name != null  and name != ''">and u.name like concat('%', #{name}, '%')</if>
+<!--        <if test="mnr != null  and mnr != ''">and u.mnr = #{mnr}</if>-->
+        <if test="fd != null  and fd != ''">and u.fd = #{fd}</if>
+        <if test="sn != null  and sn != ''">and u.sn = #{sn}</if>
+        <if test="status != null  and status != ''">and u.status = #{status}</if>
+        <if test="verifyStatus != null  and verifyStatus != ''">and u.verify_status = #{verifyStatus}</if>
+        <if test="printId != null  and printId != ''">and u.print_id = #{printId}</if>
+        <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+            AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+        </if>
+        <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+            AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+        </if>
+
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+    </select>
+
+    <select id="selectProductListData" parameterType="ProductDTO" resultMap="ProductResult">
+        select u.id,u.name,u.mnr,u.fd,u.sn,u.status,u.verify_status,
+        u.print_id,u.remark,u.create_by,u.create_time,
+        u.update_by,u.update_time,s.dept_id,d.dept_name
+        from p_product u
+        LEFT JOIN sys_user s ON u.create_by = s.user_name
+        LEFT JOIN sys_dept d ON s.dept_id =d.dept_id
+
+        where 1=1
+            <if test="id != null  and id != 0">and u.id = #{id}</if>
+            <if test="name != null  and name != ''"> and u.name like concat('%', #{name}, '%')</if>
+            <if test="mnr != null  and mnr != ''"> and u.mnr like concat('%', #{mnr}, '%')</if>
+            <if test="fd != null  and fd != ''"> and u.fd like concat('%', #{fd}, '%')</if>
+            <if test="sn != null  and sn != ''"> and u.sn = #{sn}</if>
+            <if test="status != null  and status != ''"> and u.status = #{status}</if>
+            <if test="verifyStatus != null  and verifyStatus != ''"> and u.verify_status = #{verifyStatus}</if>
+            <if test="printId != null  and printId != ''"> and u.print_id = #{printId}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+    </select>
+
+    <select id="selectProductVoById" parameterType="Long" resultMap="ProductVoResult">
+        <include refid="selectProductVo"/>
+        where u.id = #{productId}
+    </select>
+
+    <select id="selectProductById" parameterType="Long" resultMap="ProductResult">
+        <include refid="selectProduct"/>
+        where u.id = #{productId}
+    </select>
+
+    <select id="checkProductUnique" parameterType="ProductDTO" resultMap="ProductResult">
+        <include refid="selectProduct"/>
+        <where>
+            <if test="name != null and name != ''">and u.name = #{name}</if>
+            <if test="mnr != null and mnr != ''">and u.mnr = #{mnr}</if>
+            <if test="fd != null and fd != ''">and u.fd = #{fd}</if>
+            <if test="sn != null and sn != ''">and u.sn = #{sn}</if>
+        </where>
+    </select>
+
+    <select id="countActivatedProduct" resultType="java.lang.Long">
+        SELECT COUNT(0) from p_product where status = '0'
+    </select>
+
+    <update id="updateProduct">
+        update p_product
+        <set>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="verifyStatus != null and verifyStatus != ''">verify_status = #{verifyStatus},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = sysdate()</if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

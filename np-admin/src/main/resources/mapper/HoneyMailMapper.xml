@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.web.mapper.HoneyMailMapper">
+
+    <resultMap id="BaseResultMap" type="com.bosch.web.domain.HoneyMail">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="mail" column="mail" jdbcType="VARCHAR"/>
+            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,mail,
+        create_by,create_time,update_by,
+        update_time,remark,delete_flag
+    </sql>
+
+    <select id="getList" parameterType="com.bosch.web.domain.dto.HoneyMailDTO" resultType="com.bosch.web.domain.HoneyMail">
+        select
+        <include refid="Base_Column_List"/>
+        from honey_mail
+        where 1=1
+        <if test="name != null and name != ''">and name  like concat('%', #{name}, '%') </if>
+        <if test="mail != null and mail != ''">and mail  like concat('%', #{mail}, '%') </if>
+
+
+
+    </select>
+
+    <delete id="deleteByIds" parameterType="String">
+        UPDATE honey_mail SET delete_flag=1 WHERE id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

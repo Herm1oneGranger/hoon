@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.web.mapper.HoneyVerifyMapper">
+
+    <resultMap id="BaseResultMap" type="com.bosch.web.domain.HoneyVerify">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="proId" column="pro_id" jdbcType="BIGINT"/>
+            <result property="textureResults" column="texture_results" jdbcType="VARCHAR"/>
+            <result property="algoResults" column="algo_results" jdbcType="VARCHAR"/>
+            <result property="totalResults" column="total_results" jdbcType="VARCHAR"/>
+            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
+
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="telephone" column="telephone" jdbcType="VARCHAR"/>
+        <result property="appId" column="app_id" jdbcType="VARCHAR"/>
+        <result property="gender" column="gender" jdbcType="VARCHAR"/>
+        <result property="position" column="position" jdbcType="VARCHAR"/>
+        <result property="userPhoneOs" column="user_phone_os" jdbcType="VARCHAR"/>
+        <result property="province" column="province" jdbcType="VARCHAR"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+        <result property="token" column="token" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,pro_id,texture_results,
+        algo_results,total_results,create_by,
+        create_time,update_by,update_time,
+        remark,delete_flag,
+        user_name,telephone,app_id,gender,position,user_phone_os,province,city,token
+    </sql>
+
+    <select id="getList" parameterType="com.bosch.web.domain.dto.HoneyVerifyDTO" resultType="com.bosch.web.domain.vo.HoneyVerifyResultVO">
+        select
+        v.id,v.pro_id,v.texture_results,
+        v.algo_results,v.total_results,v.create_by,
+        v.create_time,v.update_by,v.update_time,
+        v.remark,v.delete_flag,p.material,p.material_code,
+        v.user_name,v.telephone,v.app_id,v.gender,v.position,v.user_phone_os,v.province,v.city,v.token
+        from honey_verify v
+        LEFT JOIN honey_pro  p ON v.pro_id=p.id AND   p.delete_flag=0
+        where 1=1 and v.delete_flag=0
+        <if test="proId != null ">and v.pro_id = #{proId}</if>
+        <if test="createTimeStart != null">and v.create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
+        <if test="createTimeEnd != null">and v.create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
+
+    </select>
+
+    <delete id="deleteAreaByIds" parameterType="String">
+        UPDATE honey_verify SET delete_flag=1 WHERE id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

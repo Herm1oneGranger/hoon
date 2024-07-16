@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.web.mapper.VerifyMapper">
+
+    <resultMap id="VerifyRecordVoResult" type="com.bosch.web.domain.vo.VerifyRecordVO">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="telephone" column="telephone" jdbcType="VARCHAR"/>
+        <result property="appId" column="app_id" jdbcType="VARCHAR"/>
+        <result property="gender" column="gender" jdbcType="CHAR"/>
+        <result property="position" column="position" jdbcType="VARCHAR"/>
+        <result property="userPhoneOS" column="user_phone_os" jdbcType="VARCHAR"/>
+        <result property="checkedTime" column="checked_time" jdbcType="TIMESTAMP"/>
+        <result property="checkedResult" column="checked_result" jdbcType="VARCHAR"/>
+        <result property="province" column="province" jdbcType="VARCHAR"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+        <result property="productId" column="product_id" jdbcType="VARCHAR"/>
+        <result property="mnr" column="mnr" jdbcType="VARCHAR"/>
+        <result property="fd" column="fd" jdbcType="VARCHAR"/>
+        <result property="sn" column="sn" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="ProductMiniVo" type="com.bosch.web.domain.vo.ProductMiniVO">
+        <id property="productID" column="id" jdbcType="INTEGER"/>
+        <result property="productName" column="name" jdbcType="VARCHAR"/>
+        <result property="mnr" column="mnr" jdbcType="VARCHAR"/>
+        <result property="fd" column="fd" jdbcType="VARCHAR"/>
+        <result property="sn" column="sn" jdbcType="VARCHAR"/>
+        <result property="imgPath" column="img_path" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="selectVerifyRecordVo">
+        select id,
+               user_name,
+               telephone,
+               app_id,
+               gender,
+               position,
+               user_phone_os,
+               checked_time,
+               checked_result,
+               province,
+               city,
+               product_id,
+               mnr,
+               fd,
+               sn,
+               remark
+        from p_verify_record u
+    </sql>
+
+    <sql id="selectConditionsByDate">
+        <where>
+            <if test="id != null  and id != 0">and u.id = #{id}</if>
+            <if test="productId != null  and productId != 0">and u.product_id = #{productId}</if>
+            <if test="mnr != null  and mnr != ''">and u.mnr = #{mnr}</if>
+            <if test="fd != null  and fd != ''">and u.fd = #{fd}</if>
+            <if test="sn != null  and sn != ''">and u.sn = #{sn}</if>
+            <if test="province != null  and province != ''">and u.province like concat('%', #{province}, '%')</if>
+            <if test="city != null  and city != ''">and u.city like concat('%', #{city}, '%')</if>
+            <if test="checkedResult != null  and checkedResult != ''">and u.checked_result = #{checkedResult}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                AND date_format(u.checked_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                AND date_format(u.checked_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+        ${params.dataScope}
+    </sql>
+
+    <sql id="selectConditionsByTime">
+        <where>
+            <if test="id != null  and id != 0">and u.id = #{id}</if>
+            <if test="productId != null  and productId != 0">and u.product_id = #{productId}</if>
+            <if test="mnr != null  and mnr != ''">and u.mnr = #{mnr}</if>
+            <if test="fd != null  and fd != ''">and u.fd = #{fd}</if>
+            <if test="sn != null  and sn != ''">and u.sn = #{sn}</if>
+            <if test="province != null  and province != ''">and u.province like concat('%', #{province}, '%')</if>
+            <if test="city != null  and city != ''">and u.city like concat('%', #{city}, '%')</if>
+            <if test="checkedResult != null  and checkedResult != ''">and u.checked_result = #{checkedResult}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                AND u.checked_time &gt;= #{params.beginTime}
+            </if>
+        </where>
+        ${params.dataScope}
+    </sql>
+
+    <insert id="insertRecord" parameterType="VerifyDTO">
+        insert into p_verify_record(
+        <if test="productId != null  and productId != 0">product_id,</if>
+        <if test="userName != null and userName != ''">user_name,</if>
+        <if test="telephone != null and telephone != ''">telephone,</if>
+        <if test="appId != null and appId != ''">app_id,</if>
+        <if test="gender != null and gender != ''">gender,</if>
+        <if test="position != null and position != ''">position,</if>
+        <if test="userPhoneOS != null and userPhoneOS != ''">user_phone_oS,</if>
+        <if test="province != null and province != ''">province,</if>
+        <if test="city != null and city != ''">city,</if>
+        <if test="mnr != null and mnr != ''">mnr,</if>
+        <if test="fd != null and fd != ''">fd,</if>
+        <if test="sn != null and sn != ''">sn,</if>
+        checked_time
+        )values(
+        <if test="productId != null  and productId != 0">#{productId},</if>
+        <if test="userName != null and userName != ''">#{userName},</if>
+        <if test="telephone != null and telephone != ''">#{telephone},</if>
+        <if test="appId != null and appId != ''">#{appId},</if>
+        <if test="gender != null and gender != ''">#{gender},</if>
+        <if test="position != null and position != ''">#{position},</if>
+        <if test="userPhoneOS != null and userPhoneOS != ''">#{userPhoneOS},</if>
+        <if test="province != null and province != ''">#{province},</if>
+        <if test="city != null and city != ''">#{city},</if>
+        <if test="mnr != null and mnr != ''">#{mnr},</if>
+        <if test="fd != null and fd != ''">#{fd},</if>
+        <if test="sn != null and sn != ''">#{sn},</if>
+        sysdate()
+        )
+    </insert>
+
+    <update id="updateRecord">
+        update p_verify_record
+        <set>
+            <if test="checkedResult != null and checkedResult != ''">checked_result = #{checkedResult},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="selectVerifyRecordList" parameterType="VerifyRecordDTO" resultMap="VerifyRecordVoResult">
+        <include refid="selectVerifyRecordVo"/>
+        <include refid="selectConditionsByDate"/>
+    </select>
+
+
+    <select id="selectVerifyRecordListByData" parameterType="VerifyRecordDTO" resultMap="VerifyRecordVoResult">
+        select u.id,
+        u.user_name,
+        u.telephone,
+        u.app_id,
+        u.gender,
+        u.position,
+        u.user_phone_os,
+        u.checked_time,
+        u.checked_result,
+        u.province,
+        u.city,
+        u.product_id,
+        u.mnr,
+        u.fd,
+        u.sn,
+        u.remark
+        from p_verify_record u
+        LEFT JOIN p_product p ON u.product_id = p.id
+        LEFT JOIN sys_user s ON p.create_by = s.user_name
+        LEFT JOIN sys_dept d ON s.dept_id =d.dept_id
+        where 1=1
+        <if test="id != null  and id != 0">and u.id = #{id}</if>
+        <if test="productId != null  and productId != 0">and u.product_id = #{productId}</if>
+        <if test="mnr != null  and mnr != ''">and u.mnr = #{mnr}</if>
+        <if test="fd != null  and fd != ''">and u.fd = #{fd}</if>
+        <if test="sn != null  and sn != ''">and u.sn = #{sn}</if>
+        <if test="province != null  and province != ''">and u.province like concat('%', #{province}, '%')</if>
+        <if test="city != null  and city != ''">and u.city like concat('%', #{city}, '%')</if>
+        <if test="checkedResult != null  and checkedResult != ''">and u.checked_result = #{checkedResult}</if>
+        <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+            AND date_format(u.checked_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+        </if>
+        <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+            AND date_format(u.checked_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+        </if>
+
+         ${params.dataScope}
+    </select>
+
+    <select id="selectProductMiniVoById" parameterType="Long" resultMap="ProductMiniVo">
+        select u.id, u.name, u.mnr, u.fd, u.sn
+        from p_product u
+        where u.id = #{productId}
+    </select>
+
+    <select id="countVerifyRecord" parameterType="VerifyRecordDTO" resultType="java.lang.Integer">
+        SELECT COUNT(0) from p_verify_record u
+        <include refid="selectConditionsByTime"/>
+    </select>
+
+    <select id="countLabelScannedLocations" parameterType="VerifyRecordDTO" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT city) from p_verify_record u
+        <include refid="selectConditionsByTime"/>
+    </select>
+
+    <select id="countLabelUsersScanned" parameterType="VerifyRecordDTO" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT app_id) from p_verify_record u
+        <include refid="selectConditionsByTime"/>
+    </select>
+
+    <select id="selectReportData" resultType="com.bosch.web.domain.vo.ReportData">
+        SELECT COUNT(1)                            as allCheckedRecord,
+               COUNT(DISTINCT app_id)              as allCheckedPeople,
+               SUM(IF(checked_result = '1', 1, 0)) as allRiskRecord
+        from p_verify_record
+    </select>
+
+    <select id="selectWeekCheckedPeople" resultType="com.bosch.web.domain.vo.RecordVo">
+        SELECT a.checkedDate,
+               ifnull(b.number, 0) AS number
+        FROM (SELECT date_sub(curdate(), INTERVAL 6 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 5 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 4 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 3 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 2 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 1 DAY ) AS checkedDate
+              UNION ALL
+              SELECT curdate() AS checkedDate) a
+                 LEFT JOIN (SELECT DATE ( checked_time) AS DATETIME,
+             COUNT(DISTINCT app_id) AS number FROM p_verify_record
+        GROUP BY DATE ( checked_time ) ) b
+        ON a.checkedDate = b.DATETIME
+        ORDER BY a.checkedDate
+    </select>
+
+    <select id="getWeekRiskRecord" resultType="com.bosch.web.domain.vo.RecordVo">
+        SELECT a.checkedDate,
+               ifnull(b.number, 0) AS number
+        FROM (SELECT date_sub(curdate(), INTERVAL 6 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 5 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 4 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 3 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 2 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 1 DAY ) AS checkedDate
+              UNION ALL
+              SELECT curdate() AS checkedDate) a
+                 LEFT JOIN (SELECT DATE
+                                ( checked_time) AS DATETIME,
+             SUM(IF(checked_result = '1', 1, 0)) AS number FROM p_verify_record
+        GROUP BY
+            DATE ( checked_time )
+            ) b
+        ON a.checkedDate = b.DATETIME
+        ORDER BY a.checkedDate
+    </select>
+
+    <select id="getYearRiskRecord" resultType="com.bosch.web.domain.vo.RecordVo">
+        SELECT a.checkedDate, ifnull(b.number, 0) AS number
+        from (SELECT DATE_FORMAT((CURDATE() - INTERVAL 11 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 10 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 9 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 8 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 7 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 6 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 5 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 4 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 3 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 2 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 1 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE()), '%Y-%m') AS checkedDate) a
+                 left join (SELECT DATE_FORMAT(checked_time, '%Y-%m') AS checkedDate, count(1) AS number
+                            from p_verify_record
+                            WHERE DATE_FORMAT(checked_time, '%Y-%m') >
+                                  DATE_FORMAT(date_sub(curdate(), interval 12 month), '%Y-%m')
+                              AND checked_result = '1'
+                            GROUP BY checkedDate) b on a.checkedDate = b.checkedDate
+        ORDER BY a.checkedDate
+    </select>
+    <select id="getWeekCheckedRecord" resultType="com.bosch.web.domain.vo.RecordVo">
+        SELECT a.checkedDate,
+               ifnull(b.number, 0) AS number
+        FROM (SELECT date_sub(curdate(), INTERVAL 6 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 5 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 4 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 3 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 2 DAY ) AS checkedDate
+              UNION ALL
+              SELECT date_sub(curdate(), INTERVAL 1 DAY ) AS checkedDate
+              UNION ALL
+              SELECT curdate() AS checkedDate) a
+                 LEFT JOIN (SELECT DATE
+                                ( checked_time) AS DATETIME,
+             SUM(1) AS number FROM p_verify_record
+        GROUP BY
+            DATE ( checked_time )
+            ) b
+        ON a.checkedDate = b.DATETIME
+        ORDER BY a.checkedDate
+    </select>
+
+    <select id="getYearCheckedRecord" resultType="com.bosch.web.domain.vo.RecordVo">
+        SELECT a.checkedDate, ifnull(b.number, 0) AS number
+        from (SELECT DATE_FORMAT((CURDATE() - INTERVAL 11 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 10 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 9 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 8 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 7 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 6 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 5 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 4 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 3 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 2 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE() - INTERVAL 1 MONTH), '%Y-%m') AS checkedDate
+              UNION
+              SELECT DATE_FORMAT((CURDATE()), '%Y-%m') AS checkedDate) a
+                 left join (SELECT DATE_FORMAT(checked_time, '%Y-%m') AS checkedDate, count(1) AS number
+                            from p_verify_record
+                            WHERE DATE_FORMAT(checked_time, '%Y-%m') >
+                                  DATE_FORMAT(date_sub(curdate(), interval 12 month), '%Y-%m')
+                            GROUP BY checkedDate) b on a.checkedDate = b.checkedDate
+        ORDER BY a.checkedDate
+    </select>
+
+    <select id="getAddressData" resultType="com.bosch.web.domain.vo.RecordVo">
+        SELECT DISTINCT b.province,
+                        a.city,
+                        a.number
+        FROM p_verify_record b
+                 RIGHT JOIN (SELECT city, COUNT(city) AS number
+                             FROM p_verify_record
+                             GROUP BY city
+                             ORDER BY number DESC) a ON b.city = a.city
+    </select>
+
+    <select id="getAddressByProvince" resultType="com.bosch.web.domain.vo.RecordVo">
+        SELECT province, COUNT(province) AS number
+        FROM p_verify_record
+        GROUP BY province
+        ORDER BY number DESC LIMIT 0,20
+    </select>
+
+
+</mapper>

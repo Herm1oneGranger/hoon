@@ -1,0 +1,16 @@
+{
+    "id": "gljy-data-picker",
+    "name": "data-picker级联选择行政区域",
+    "version": "1.0.3",
+    "description": "级联选择行政区域或部门信息等",
+    "keywords": [
+        "级联选择器",
+        "data-picker"
+    ],
+    "dcloudext": {
+        "category": [
+            "前端组件",
+            "通用组件"
+        ]
+    }
+}

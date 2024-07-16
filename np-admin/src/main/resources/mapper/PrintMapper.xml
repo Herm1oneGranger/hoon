@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.web.mapper.PrintMapper">
+
+    <resultMap id="PrintVoResult" type="com.bosch.web.domain.vo.PrintVO">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="printNumber" column="print_number" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="CHAR"/>
+            <result property="xml" column="xml" jdbcType="VARCHAR"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="selectPrintVo">
+        select id,name,status,print_number,
+        xml,remark,create_by,
+        create_time,update_by,update_time from p_print u
+    </sql>
+
+    <insert id="insertPrint" parameterType="Print" useGeneratedKeys="true" keyProperty="id">
+        insert into p_print(
+        <if test="name != null and name != ''">name,</if>
+        <if test="printNumber != null and printNumber != ''">print_number,</if>
+        <if test="status != null and status != ''">status,</if>
+        <if test="xml != null and xml != ''">xml,</if>
+        <if test="remark != null and remark != ''">remark,</if>
+        <if test="createBy != null and createBy != ''">create_by,</if>
+        create_time,
+        <if test="updateBy != null and updateBy != ''">update_by,update_time</if>
+        )values(
+        <if test="name != null and name != ''">#{name},</if>
+        <if test="printNumber != null and printNumber != ''">#{printNumber},</if>
+        <if test="status != null and status != ''">#{status},</if>
+        <if test="xml != null and xml != ''">#{xml},</if>
+        <if test="remark != null and remark != ''">#{remark},</if>
+        <if test="createBy != null and createBy != ''">#{createBy},</if>
+        sysdate(),
+        <if test="updateBy != null and updateBy != ''">#{updateBy},sysdate()</if>
+        )
+    </insert>
+
+    <update id="updatePrint">
+        update p_print
+        <set>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <select id="selectPrintList" parameterType="Print" resultMap="PrintVoResult">
+        <include refid="selectPrintVo"/>
+        <where>
+            <if test="id != null  and id != 0"> and u.id = #{id}</if>
+            <if test="name != null  and name != ''"> and u.name like concat('%', #{name}, '%')</if>
+            <if test="status != null  and status != ''"> and u.status = #{status}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+    </select>
+
+    <select id="selectPrintListByData" parameterType="Print" resultMap="PrintVoResult">
+        select u.id,u.name,u.status,u.print_number,
+        u.xml,u.remark,u.create_by,
+        u.create_time,u.update_by,u.update_time from p_print u
+        LEFT JOIN sys_user s ON u.create_by = s.user_name
+        LEFT JOIN sys_dept d ON s.dept_id =d.dept_id
+                                    where 1=1
+
+            <if test="id != null  and id != 0"> and u.id = #{id}</if>
+            <if test="name != null  and name != ''"> and u.name like concat('%', #{name}, '%')</if>
+            <if test="status != null  and status != ''"> and u.status = #{status}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+    </select>
+
+    <select id="selectPrintById" parameterType="Long" resultMap="PrintVoResult">
+        <include refid="selectPrintVo"/>
+        where u.id = #{printId}
+    </select>
+
+    <select id="checkPrintNameUnique" parameterType="String" resultMap="PrintVoResult">
+        <include refid="selectPrintVo"/>
+        where u.name=#{fileName} limit 1
+    </select>
+
+    <select id="selectWeekActivatedLabel" resultType="com.bosch.web.domain.vo.RecordVo">
+        SELECT a.checkedDate, ifnull( b.number, 0 ) AS number
+        FROM(
+                SELECT
+                    date_sub( curdate(), INTERVAL 6 DAY ) AS checkedDate UNION ALL
+                SELECT
+                    date_sub( curdate(), INTERVAL 5 DAY ) AS checkedDate UNION ALL
+                SELECT
+                    date_sub( curdate(), INTERVAL 4 DAY ) AS checkedDate UNION ALL
+                SELECT
+                    date_sub( curdate(), INTERVAL 3 DAY ) AS checkedDate UNION ALL
+                SELECT
+                    date_sub( curdate(), INTERVAL 2 DAY ) AS checkedDate UNION ALL
+                SELECT
+                    date_sub( curdate(), INTERVAL 1 DAY ) AS checkedDate UNION ALL
+                SELECT
+                    curdate() AS checkedDate
+            ) a
+        LEFT JOIN (
+        SELECT DATE ( create_time ) AS DATETIME, COUNT(0) AS number FROM p_product
+        GROUP BY DATE ( create_time ) ) b ON a.checkedDate = b.DATETIME
+    </select>
+
+</mapper>
