@@ -14,8 +14,9 @@ public class RocketMQProducer {
     private RocketMQTemplate rocketMQTemplate;
 
 
-    public void sendMessage(String topic, String message) {
-        rocketMQTemplate.convertAndSend(topic, message);
+    public void sendMessage(String topic,String tag, String message) {
+        rocketMQTemplate.convertAndSend(topic, tag);
+
         System.out.println("Message sent to topic: " + topic);
     }
 }

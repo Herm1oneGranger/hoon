@@ -12,17 +12,23 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * 校验信息表
- * @TableName honey_verify
+ * 
+ * @TableName honey_feedback
  */
-@TableName(value ="honey_verify")
+@TableName(value ="honey_feedback")
 @Data
-public class HoneyVerify  {
+public class HoneyFeedback  {
     /**
      * 
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+
+    /**
+     * 渠道
+     */
+    @TableField(value = "channel")
+    private String channel;
 
     /**
      * 产品id
@@ -31,22 +37,16 @@ public class HoneyVerify  {
     private Long proId;
 
     /**
-     * 纹理结果
+     * verifyid
      */
-    @TableField(value = "texture_results")
-    private String textureResults;
+    @TableField(value = "record_id")
+    private Long recordId;
 
     /**
-     * 算法结果
+     * token
      */
-    @TableField(value = "algo_results")
-    private String algoResults;
-
-    /**
-     * 校验结果
-     */
-    @TableField(value = "total_results")
-    private String totalResults;
+    @TableField(value = "token")
+    private String token;
 
 
 
@@ -56,33 +56,45 @@ public class HoneyVerify  {
     @TableField(value = "delete_flag")
     private Integer deleteFlag;
 
-    @TableField(value = "user_name")
-    private String userName;
-    @TableField(value = "telephone")
-    private String telephone;
-    @TableField(value = "app_id")
-    private String appId;
-    @TableField(value = "gender")
-    private String gender;
-    @TableField(value = "position")
-    private String position;
-    @TableField(value = "user_phone_os")
-    private String userPhoneOs;
-    @TableField(value = "province")
-    private String province;
-    @TableField(value = "city")
-    private String city;
-    @TableField(value = "token")
-    private String token;
-
+    /**
+     * 图片
+     */
     @TableField(value = "pic")
     private String pic;
-    @TableField(value = "model")
-    private String model;
 
+    /**
+     * 公司
+     */
+    @TableField(value = "company")
+    private String company;
+
+    /**
+     * 手机
+     */
+    @TableField(value = "phone")
+    private String phone;
+
+    /**
+     * 描述
+     */
+    @TableField(value = "des")
+    private String des;
+
+    /**
+     * 名字
+     */
+    @TableField(value = "name")
+    private String name;
+
+    @TableField(value = "mail")
+    private String mail;
+
+    @TableField(value = "status")
+    private Integer status;
 
     /** 创建者 */
     @ApiModelProperty(value = "创建者")
+    @TableField(value = "create_by")
     @Excel(name = "创建者")
     private String createBy;
 

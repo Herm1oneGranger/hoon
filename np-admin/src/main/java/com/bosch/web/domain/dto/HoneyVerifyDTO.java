@@ -103,4 +103,10 @@ public class HoneyVerifyDTO extends PageDomain {
 
     @ApiModelProperty(value = "token")
     private String token;
+
+    @ApiModelProperty(value = "pic")
+    private String pic;
+
+    @ApiModelProperty(value = "model")
+    private String model;
 }

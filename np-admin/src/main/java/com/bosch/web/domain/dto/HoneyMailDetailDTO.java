@@ -1,62 +1,55 @@
-package com.bosch.web.domain;
+package com.bosch.web.domain.dto;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.util.Date;
-
-import com.bosch.common.annotation.Excel;
 import com.bosch.common.core.domain.BaseEntity;
+import com.bosch.common.core.page.PageDomain;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
  * 
  * @TableName honey_mail_detail
  */
-@TableName(value ="honey_mail_detail")
+
 @Data
-public class HoneyMailDetail extends BaseEntity {
+public class HoneyMailDetailDTO extends PageDomain {
     /**
      * 
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @ApiModelProperty(value = "id")
     private Long id;
 
     /**
      * 用户
      */
-    @Excel(name = "用户")
-    @TableField(value = "name")
+    @ApiModelProperty(value = "name")
     private String name;
 
     /**
      * 邮箱
      */
-    @Excel(name = "邮箱")
-    @TableField(value = "mail")
+    @ApiModelProperty(value = "mail")
     private String mail;
 
     /**
      * 标题
      */
-    @Excel(name = "标题")
-    @TableField(value = "title")
+    @ApiModelProperty(value = "title")
     private String title;
 
     /**
      * 状态
      */
-    @Excel(name = "状态", readConverterExp = "0=启用,1=停用")
-    @TableField(value = "status")
+    @ApiModelProperty(value = "status")
     private String status;
 
     /**
      * 内容
      */
-    @Excel(name = "内容")
-    @TableField(value = "content")
+    @ApiModelProperty(value = "content")
     private String content;
 
 
@@ -65,9 +58,7 @@ public class HoneyMailDetail extends BaseEntity {
     /**
      * 删除标记1：删除，0:可用
      */
-    @TableField(value = "delete_flag")
+    @ApiModelProperty(value = "delete_flag")
     private Integer deleteFlag;
 
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
 }

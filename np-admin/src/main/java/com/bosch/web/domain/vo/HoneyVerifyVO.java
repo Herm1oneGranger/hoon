@@ -15,4 +15,5 @@ public class HoneyVerifyVO {
 
     private String msg;
 
+    private Integer reocrdId;
 }

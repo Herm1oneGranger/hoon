@@ -50,14 +50,33 @@
         <if test="poNo != null and poNo != ''">and po_no  like concat('%', #{poNo}, '%')</if>
         <if test="soldTo != null and soldTo != ''">and sold_to  like concat('%', #{soldTo}, '%')</if>
         <if test="shipTo != null and shipTo != ''">and ship_to  like concat('%', #{shipTo}, '%')</if>
-
+        <if test="token != null and token != ''">and token  = #{token}</if>
 
     </select>
 
+    <select id="getToken" parameterType="com.bosch.web.domain.dto.HoneyProDTO" resultType="com.bosch.web.domain.HoneyPro">
+        select
+        <include refid="Base_Column_List"/>
+        from honey_pro
+        where 1=1 and delete_flag=0
+
+        <if test="token != null and token != ''">and token  = #{token}</if>
+
+    </select>
     <delete id="deleteAreaByIds" parameterType="String">
         UPDATE honey_pro SET delete_flag=1 WHERE id IN
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>
+
+    <update id="updateStatus">
+        update honey_pro
+        <set>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
 </mapper>

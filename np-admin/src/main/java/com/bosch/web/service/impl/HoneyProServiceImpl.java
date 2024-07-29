@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
 * @author GUZ1CGD4
@@ -33,6 +35,9 @@ public class HoneyProServiceImpl extends ServiceImpl<HoneyProMapper, HoneyPro>
         HoneyPro honeyPro = BeanConverUtil.conver(dto, HoneyPro.class);
 
 
+        //todo  token
+        String s = tokenGen(dto);
+        honeyPro.setToken(s);
         int insert = mapper.insert(honeyPro);
 
         return insert;
@@ -41,6 +46,8 @@ public class HoneyProServiceImpl extends ServiceImpl<HoneyProMapper, HoneyPro>
     @Override
     public int updateHoney(HoneyProDTO dto) {
         HoneyPro honeyPro = BeanConverUtil.conver(dto, HoneyPro.class);
+        //todo  token
+
         int i = mapper.updateById(honeyPro);
         return i;
     }
@@ -50,18 +57,28 @@ public class HoneyProServiceImpl extends ServiceImpl<HoneyProMapper, HoneyPro>
         List<HoneyPro> list = mapper.getList(dto);
         return list;
     }
+    @Override
+    public List<HoneyPro> getToken(String token) {
+        List<HoneyPro> list = mapper.getToken(token);
+        return list;
+    }
 
     @Override
     public int deleteAreaByIds(Integer[] ids) {
         return mapper.deleteAreaByIds(ids);
     }
 
-    //token生成
+    //todo token生成
     public String tokenGen(HoneyProDTO dto){
-        String token=new String();
 
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
+    }
 
-        return token;
+    public int updateStatus(HoneyProDTO dto){
+        HoneyPro honeyPro = BeanConverUtil.conver(dto, HoneyPro.class);
+        int i = mapper.updateStatus(honeyPro);
+        return i;
     }
 }
 

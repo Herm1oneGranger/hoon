@@ -118,20 +118,16 @@ public class VerifyController extends BaseController {
         base64Str = base64Str.substring(base64Str.indexOf(",") + 1);
         // 生成文件名
         String fileName = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".jpg";
-
         // 文件保存路径
         String filePath = "/home/soroot/dc/nameplate/" + fileName;
-
         // 检查并创建文件夹
         File file = new File(filePath);
         File dir = file.getParentFile();
         if (!dir.exists()) {
             dir.mkdirs();
         }
-
         // 解码Base64字符串
         byte[] imageBytes = Base64.getDecoder().decode(base64Str);
-
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(imageBytes);
             // 保存图片的 地址
@@ -142,7 +138,6 @@ public class VerifyController extends BaseController {
             Integer imageId = pImages.getId();
             vo.setMsg("二维码校验通过");
             vo.setResult("1");
-
             return success(vo);
 
         } catch (IOException e) {
@@ -151,4 +146,6 @@ public class VerifyController extends BaseController {
         }
 
     }
+
+
 }

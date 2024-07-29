@@ -267,7 +267,7 @@
                 <profiles.active>C:/Users/ZPO2SGH/Projects/DC-Nameplate/dc-nameplate/doc/ICO_IMG</profiles.active>
                 <datasource.host>localhost</datasource.host>
                 <datasource.password>123456</datasource.password>
-                <redis.host>localhost</redis.host>
+                <redis.host>127.0.0.1</redis.host>
                 <redis.password></redis.password>
             </properties>
         </profile>

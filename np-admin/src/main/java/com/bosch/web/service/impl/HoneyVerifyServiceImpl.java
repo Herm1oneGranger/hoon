@@ -1,21 +1,26 @@
 package com.bosch.web.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.common.utils.BeanConverUtil;
 import com.bosch.web.constant.MsgConstants;
 import com.bosch.web.domain.HoneyPro;
 import com.bosch.web.domain.HoneyVerify;
 import com.bosch.web.domain.dto.HoneyVerifyDTO;
+import com.bosch.web.domain.dto.PVerifyDTO;
 import com.bosch.web.domain.vo.HoneyVerifyResultVO;
 import com.bosch.web.domain.vo.HoneyVerifyVO;
 import com.bosch.web.mapper.HoneyProMapper;
+import com.bosch.web.service.HoneyProService;
 import com.bosch.web.service.HoneyVerifyService;
 import com.bosch.web.mapper.HoneyVerifyMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -37,6 +42,11 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
     @Autowired
     private HoneyVerifyMapper mapper;
 
+    @Autowired
+    private HoneyProService proService;
+
+    @Value("${api.python-url}")
+    private String baseUrl;
 
     @Override
     public int insertHoney(HoneyVerifyDTO dto) {
@@ -47,7 +57,15 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
 
         return insert;
     }
+    @Override
+    public HoneyVerify insertHoneyGetId(HoneyVerifyDTO dto) {
+        HoneyVerify honeyVerify = BeanConverUtil.conver(dto, HoneyVerify.class);
 
+
+        int insert = mapper.insert(honeyVerify);
+
+        return honeyVerify;
+    }
     @Override
     public int updateHoney(HoneyVerifyDTO dto) {
         HoneyVerify honeyVerify = BeanConverUtil.conver(dto, HoneyVerify.class);
@@ -119,6 +137,34 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
 
         return vo;
     }
+
+    @Override
+    public HoneyVerifyVO iqa(PVerifyDTO dto) {
+        // iqa校验
+        RestTemplate restTemplate = new RestTemplate();
+
+        // post 请求获取一个对象
+        HoneyVerifyVO temp = restTemplate.postForObject(baseUrl, dto.getImgBase(), HoneyVerifyVO.class);
+
+        if(temp!=null){
+            return temp;
+        }else {
+            return new HoneyVerifyVO();
+        }
+    }
+
+    @Override
+    public HoneyVerifyVO checkToken(PVerifyDTO dto) {
+        List<HoneyPro> tokens = proService.getToken(dto.getToken());
+        if (CollectionUtils.isEmpty(tokens)){
+            HoneyVerifyVO honeyVerifyVO = new HoneyVerifyVO();
+            honeyVerifyVO.setResult(MsgConstants.FAKE);
+            honeyVerifyVO.setMsg(MsgConstants.NOTOKENDES);
+            return honeyVerifyVO;
+        }
+        return new HoneyVerifyVO();
+    }
+
     private static String formatPosition(String position) {
         String[] coords = position.split(",");
         double lat = Double.parseDouble(coords[0]);

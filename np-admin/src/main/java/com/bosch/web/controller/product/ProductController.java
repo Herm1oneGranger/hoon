@@ -127,12 +127,10 @@ public class ProductController extends BaseController {
     @PostMapping(value = "/productImport")
     public  R masterDataImport(@RequestPart(value = "file") MultipartFile file) throws Exception {
         try {
-
             EasyExcelUtil.headerRead(file.getInputStream());
             List<ProductExcel> read = EasyExcelUtil.read(file.getInputStream());
             //有唯一键 重复值直接忽略
             int i = productService.insertProduct(read);
-
             return R.ok(i);
         } catch (Exception e) {
 

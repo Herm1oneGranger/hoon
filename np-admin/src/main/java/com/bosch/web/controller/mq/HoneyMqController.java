@@ -37,7 +37,7 @@ public class HoneyMqController extends BaseController {
     public void testSyncSend() throws InterruptedException {
         int id = (int) (System.currentTimeMillis() / 1000);
         for (int i = 0; i < 10; i++) {
-            producer.sendMessage("my-topic",String.valueOf(i));
+            producer.sendMessage("my-topic","",String.valueOf(i));
 
         }
 

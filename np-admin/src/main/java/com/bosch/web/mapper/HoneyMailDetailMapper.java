@@ -1,7 +1,12 @@
 package com.bosch.web.mapper;
 
+import com.bosch.web.domain.HoneyMail;
 import com.bosch.web.domain.HoneyMailDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bosch.web.domain.dto.HoneyMailDTO;
+import com.bosch.web.domain.dto.HoneyMailDetailDTO;
+
+import java.util.List;
 
 /**
 * @author GUZ1CGD4
@@ -11,6 +16,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface HoneyMailDetailMapper extends BaseMapper<HoneyMailDetail> {
 
+
+    List<HoneyMailDetail> getList(HoneyMailDetailDTO dto);
+
+    int deleteByIds(Integer[] ids);
 }
 
 

@@ -120,6 +120,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/product/verify/check").permitAll()
                 .antMatchers("/product/verify/checkNoMnr").permitAll()
                 .antMatchers("/product/verify/verify").permitAll()
+                .antMatchers("/honey/verify/upload").permitAll()
+                .antMatchers("/honey/feedback/add").permitAll()
+                .antMatchers("/honey/verify/verify").permitAll()
+                .antMatchers("/honey/verify/verify1").permitAll()
+                .antMatchers("/honey/verify/getOpenId").permitAll()
+
                 .antMatchers("/product/verify/getInfo/*").permitAll()
                 .antMatchers("/product/verify/getProductPicture/*").permitAll()
                 .antMatchers("/product/verify/getOpenId").permitAll()

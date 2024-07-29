@@ -5,6 +5,7 @@ import com.bosch.web.domain.HoneyVerify;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.web.domain.dto.HoneyProDTO;
 import com.bosch.web.domain.dto.HoneyVerifyDTO;
+import com.bosch.web.domain.dto.PVerifyDTO;
 import com.bosch.web.domain.vo.HoneyVerifyResultVO;
 import com.bosch.web.domain.vo.HoneyVerifyVO;
 
@@ -19,7 +20,7 @@ public interface HoneyVerifyService extends IService<HoneyVerify> {
 
     int insertHoney(HoneyVerifyDTO dto);
 
-
+    HoneyVerify  insertHoneyGetId(HoneyVerifyDTO dto);
     int updateHoney(HoneyVerifyDTO dto);
     List<HoneyVerifyResultVO> getList(HoneyVerifyDTO dto);
 
@@ -30,4 +31,8 @@ public interface HoneyVerifyService extends IService<HoneyVerify> {
 //  3.同一标签一天内不同地点不同用户扫码超过2次。
 //  4.第一次扫描为真后，7天内同IP同用户通过
     HoneyVerifyVO algoVerify(HoneyVerifyDTO dto);
+
+    HoneyVerifyVO iqa(PVerifyDTO dto);
+
+    HoneyVerifyVO checkToken(PVerifyDTO dto);
 }

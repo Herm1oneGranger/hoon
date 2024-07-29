@@ -26,14 +26,16 @@
         <result property="province" column="province" jdbcType="VARCHAR"/>
         <result property="city" column="city" jdbcType="VARCHAR"/>
         <result property="token" column="token" jdbcType="VARCHAR"/>
+        <result property="pic" column="pic" jdbcType="VARCHAR"/>
+        <result property="model" column="model" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,pro_id,texture_results,
         algo_results,total_results,create_by,
         create_time,update_by,update_time,
-        remark,delete_flag,
-        user_name,telephone,app_id,gender,position,user_phone_os,province,city,token
+        remark,delete_flag,pic,
+        user_name,telephone,app_id,gender,position,user_phone_os,province,city,token,model
     </sql>
 
     <select id="getList" parameterType="com.bosch.web.domain.dto.HoneyVerifyDTO" resultType="com.bosch.web.domain.vo.HoneyVerifyResultVO">
@@ -41,16 +43,32 @@
         v.id,v.pro_id,v.texture_results,
         v.algo_results,v.total_results,v.create_by,
         v.create_time,v.update_by,v.update_time,
-        v.remark,v.delete_flag,p.material,p.material_code,
-        v.user_name,v.telephone,v.app_id,v.gender,v.position,v.user_phone_os,v.province,v.city,v.token
+        v.remark,v.delete_flag,p.material,p.material_code,p.so,p.item_no,p.order_qua,p.order_no,
+        v.user_name,v.telephone,v.app_id,v.gender,v.position,v.user_phone_os,v.province,v.city,v.token,v.pic,v.model
         from honey_verify v
-        LEFT JOIN honey_pro  p ON v.pro_id=p.id AND   p.delete_flag=0
+        LEFT JOIN honey_pro  p ON v.token=p.token AND   p.delete_flag=0
         where 1=1 and v.delete_flag=0
         <if test="proId != null ">and v.pro_id = #{proId}</if>
         <if test="createTimeStart != null">and v.create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
         <if test="createTimeEnd != null">and v.create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
 
     </select>
+
+    <insert id="insertHoneyVerify" parameterType="com.bosch.web.domain.HoneyVerify">
+        INSERT INTO honey_verify (
+            pro_id, texture_results, algo_results, total_results,
+            create_by, create_time, update_by, update_time,
+            remark, delete_flag, pic, user_name, telephone,
+            app_id, gender, position, user_phone_os,
+            province, city, token, model
+        ) VALUES (
+                     #{proId}, #{textureResults}, #{algoResults}, #{totalResults},
+                     #{createBy}, #{createTime}, #{updateBy}, #{updateTime},
+                     #{remark}, #{deleteFlag}, #{pic}, #{userName}, #{telephone},
+                     #{appId}, #{gender}, #{position}, #{userPhoneOs},
+                     #{province}, #{city}, #{token}, #{model}
+                 )
+    </insert>
 
     <delete id="deleteAreaByIds" parameterType="String">
         UPDATE honey_verify SET delete_flag=1 WHERE id IN

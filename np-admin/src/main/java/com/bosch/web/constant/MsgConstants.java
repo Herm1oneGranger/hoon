@@ -9,8 +9,17 @@ import io.jsonwebtoken.Claims;
  */
 public class MsgConstants
 {
+    public static final String TRUE = "True";
+    public static final String FAKE = "Fake";
+    public static final String MANUAL = "Manual";
+    public static final String NOTOKEN = "notoken";
+
+    public static final String NOTOKENDES = "未查询到token";
     public static final String TEXTUREFAIL = "205";
 
+    public static final String IQASUCCESS = "Success";
+
+    public static final String Retry = "Retry";
     public static final String TEXTURESUCCESS = "200";
     public static final String OVERFIVE = "同一标签扫码次数过多。标签累计扫码次数超过5次。";
 

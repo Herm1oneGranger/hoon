@@ -184,3 +184,6 @@ rocketmq:
   consumer:
     group: my-consumer-group
     topic: my-topic
+
+api:
+  python-url: localhost:8080
