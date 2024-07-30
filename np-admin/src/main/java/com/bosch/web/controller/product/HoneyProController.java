@@ -102,6 +102,7 @@ public class HoneyProController extends BaseController {
 
     @Log(title = logTitle, businessType = BusinessType.UPDATE)
     @PostMapping("/updateStatus")
+    @PreAuthorize("@ss.hasRole('admin')")
     public AjaxResult updateStatus(@RequestBody HoneyProDTO dto ) {
 
         int i = honeyProService.updateStatus(dto);

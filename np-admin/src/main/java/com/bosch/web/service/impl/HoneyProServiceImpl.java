@@ -77,6 +77,7 @@ public class HoneyProServiceImpl extends ServiceImpl<HoneyProMapper, HoneyPro>
 
     public int updateStatus(HoneyProDTO dto){
         HoneyPro honeyPro = BeanConverUtil.conver(dto, HoneyPro.class);
+        //判断人员权限
         int i = mapper.updateStatus(honeyPro);
         return i;
     }
