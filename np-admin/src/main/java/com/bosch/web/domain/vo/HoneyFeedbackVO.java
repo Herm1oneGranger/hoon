@@ -1,6 +1,7 @@
 package com.bosch.web.domain.vo;
 
 import com.bosch.common.annotation.Excel;
+import com.bosch.common.core.domain.BaseEntity;
 import com.bosch.common.core.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,7 +12,7 @@ import lombok.Data;
  */
 
 @Data
-public class HoneyFeedbackVO extends PageDomain {
+public class HoneyFeedbackVO extends BaseEntity {
     /**
      * 
      */

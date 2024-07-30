@@ -77,6 +77,6 @@
             <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
             update_time = sysdate()
         </set>
-        where id = #{id}
+        where token = #{token}
     </update>
 </mapper>
