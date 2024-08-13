@@ -16,6 +16,8 @@
     </description>
 
     <dependencies>
+
+
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-generator</artifactId>
@@ -122,6 +124,8 @@
             <artifactId>spring-boot-test</artifactId>
             <version>2.7.2</version>
         </dependency>
+
+
     </dependencies>
 
     <build>

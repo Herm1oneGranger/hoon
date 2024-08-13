@@ -30,4 +30,8 @@ public interface HoneyProService extends IService<HoneyPro> {
     String tokenGen(HoneyProDTO dto);
 
     int updateStatus(HoneyProDTO dto);
+
+    List<String> selectDate(String materialCode);
+
+    List<String> selectYear();
 }

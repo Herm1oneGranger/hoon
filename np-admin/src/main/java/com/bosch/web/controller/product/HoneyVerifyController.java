@@ -20,6 +20,7 @@ import com.bosch.web.domain.dto.*;
 import com.bosch.web.domain.vo.HoneyVerifyResultVO;
 import com.bosch.web.domain.vo.HoneyVerifyVO;
 import com.bosch.web.domain.vo.VerifyRecordVO;
+import com.bosch.web.service.HoneyMailDetailService;
 import com.bosch.web.service.HoneyTypeService;
 import com.bosch.web.service.HoneyVerifyService;
 import com.bosch.web.service.PImagesService;
@@ -68,6 +69,9 @@ public class HoneyVerifyController extends BaseController {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private HoneyMailDetailService detailService;
     /**
      *
      */

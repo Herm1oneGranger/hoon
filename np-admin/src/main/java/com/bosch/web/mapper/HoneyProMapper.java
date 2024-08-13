@@ -23,6 +23,10 @@ public interface HoneyProMapper extends BaseMapper<HoneyPro> {
     int deleteAreaByIds(Integer[] ids);
 
     int updateStatus(HoneyPro honeyPro);
+
+    List<String> selectDate(String materialCode);
+
+    List<String> selectYear();
 }
 
 

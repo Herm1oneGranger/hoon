@@ -72,7 +72,7 @@ public class HoneyProServiceImpl extends ServiceImpl<HoneyProMapper, HoneyPro>
     public String tokenGen(HoneyProDTO dto){
 
         UUID uuid = UUID.randomUUID();
-        return uuid.toString();
+        return uuid.toString().substring(0,10);
     }
 
     public int updateStatus(HoneyProDTO dto){
@@ -80,6 +80,20 @@ public class HoneyProServiceImpl extends ServiceImpl<HoneyProMapper, HoneyPro>
         //判断人员权限
         int i = mapper.updateStatus(honeyPro);
         return i;
+    }
+
+    @Override
+    public  List<String> selectDate(String materialCode){
+
+        List<String> strings = mapper.selectDate(materialCode);
+        return  strings;
+    }
+
+    @Override
+    public  List<String> selectYear(){
+
+        List<String> strings = mapper.selectYear();
+        return  strings;
     }
 }
 

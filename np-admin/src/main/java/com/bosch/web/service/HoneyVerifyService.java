@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.web.domain.dto.HoneyProDTO;
 import com.bosch.web.domain.dto.HoneyVerifyDTO;
 import com.bosch.web.domain.dto.PVerifyDTO;
+import com.bosch.web.domain.vo.HoneyDashVO;
 import com.bosch.web.domain.vo.HoneyVerifyResultVO;
 import com.bosch.web.domain.vo.HoneyVerifyVO;
 
@@ -35,4 +36,15 @@ public interface HoneyVerifyService extends IService<HoneyVerify> {
     HoneyVerifyVO iqa(PVerifyDTO dto);
 
     HoneyVerifyVO checkToken(PVerifyDTO dto);
+
+
+    List<HoneyVerifyResultVO> getDash(HoneyVerifyDTO dto);
+
+    List<HoneyVerifyResultVO> getDash2(HoneyVerifyDTO dto);
+
+    List<HoneyDashVO> getMonthlyStats(List<HoneyVerifyResultVO> dash);
+
+    List<HoneyDashVO> getQuarterlyStats(List<HoneyVerifyResultVO> dash);
+
+    List<HoneyDashVO> getYearlyStats(List<HoneyVerifyResultVO> dash);
 }

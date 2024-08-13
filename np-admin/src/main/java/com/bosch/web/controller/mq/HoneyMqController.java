@@ -29,18 +29,18 @@ import java.util.concurrent.CountDownLatch;
 @RequestMapping("/honey/mq")
 public class HoneyMqController extends BaseController {
 
-    private final String logTitle = "";
-    @Autowired
-    private RocketMQProducer producer;
-
-    @PostMapping("/send")
-    public void testSyncSend() throws InterruptedException {
-        int id = (int) (System.currentTimeMillis() / 1000);
-        for (int i = 0; i < 10; i++) {
-            producer.sendMessage("my-topic","",String.valueOf(i));
-
-        }
-
-
-    }
+//    private final String logTitle = "";
+//    @Autowired
+//    private RocketMQProducer producer;
+//
+//    @PostMapping("/send")
+//    public void testSyncSend() throws InterruptedException {
+//        int id = (int) (System.currentTimeMillis() / 1000);
+//        for (int i = 0; i < 10; i++) {
+//            producer.sendMessage("my-topic","",String.valueOf(i));
+//
+//        }
+//
+//
+//    }
 }

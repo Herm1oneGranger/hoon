@@ -79,4 +79,25 @@
         </set>
         where token = #{token}
     </update>
+
+    <select id="selectYear" parameterType="String" resultType="String">
+        SELECT DISTINCT
+            DATE_FORMAT(create_time, '%Y') AS date_group
+        FROM
+            honey_pro
+
+        GROUP BY
+            DATE_FORMAT(create_time, '%Y')
+    </select>
+
+    <select id="selectDate" parameterType="String" resultType="String">
+        SELECT DISTINCT
+        DATE_FORMAT(create_time, '%Y-%m-%d') AS date_group
+        FROM
+        honey_pro
+        where  1=1
+        <if test="materialCode != null and materialCode != ''">and material_code = #{materialCode}</if>
+        GROUP BY
+        DATE_FORMAT(create_time, '%Y-%m-%d')
+    </select>
 </mapper>

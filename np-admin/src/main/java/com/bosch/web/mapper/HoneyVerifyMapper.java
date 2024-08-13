@@ -19,7 +19,9 @@ public interface HoneyVerifyMapper extends BaseMapper<HoneyVerify> {
 
     List<HoneyVerifyResultVO> getList(HoneyVerifyDTO dto);
 
+    List<HoneyVerifyResultVO> getDash(HoneyVerifyDTO dto);
 
+    List<HoneyVerifyResultVO> getDash2(HoneyVerifyDTO dto);
     int insertHoneyVerify(HoneyVerify honeyVerify);
     int deleteAreaByIds(Integer[] ids);
 }

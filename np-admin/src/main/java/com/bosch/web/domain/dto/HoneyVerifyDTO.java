@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.bosch.common.core.domain.BaseEntity;
 import com.bosch.common.core.page.PageDomain;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -18,9 +20,15 @@ import java.util.Date;
 
 @Data
 public class HoneyVerifyDTO extends PageDomain {
-    /**
-     *
-     */
+
+
+    @ApiModelProperty(value = "dateType")
+    private String dateType;
+
+    @ApiModelProperty(value = "materialCode")
+    private String materialCode;
+
+
     @ApiModelProperty(value = "id")
     private Long id;
 
@@ -57,9 +65,13 @@ public class HoneyVerifyDTO extends PageDomain {
     /**
      *
      */
+
     @ApiModelProperty(value = "create_time")
     private Date createTime;
 
+
+    @ApiModelProperty(value = "create_time")
+    private String createTimeFormat;
     /**
      * 更新者
      */

@@ -6,11 +6,12 @@ import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.stereotype.Service;
 
 @Service
-@RocketMQMessageListener(topic = "my-topic",   consumerGroup = "my-consumer-group")
-public class RocketMQConsumer implements RocketMQListener<String> {
+//@RocketMQMessageListener(topic = "my-topic",   consumerGroup = "my-consumer-group")
+// implements RocketMQListener<String>
+public class RocketMQConsumer{
 
-    @Override
-    public void onMessage(String message) {
-        System.out.println("Received message: " + message);
-    }
+//    @Override
+//    public void onMessage(String message) {
+//        System.out.println("Received message: " + message);
+//    }
 }
