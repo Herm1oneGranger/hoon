@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.web.domain.dto.HoneyProDTO;
 import com.bosch.web.domain.dto.HoneyVerifyDTO;
 import com.bosch.web.domain.dto.PVerifyDTO;
+import com.bosch.web.domain.vo.ApiResponse;
 import com.bosch.web.domain.vo.HoneyDashVO;
 import com.bosch.web.domain.vo.HoneyVerifyResultVO;
 import com.bosch.web.domain.vo.HoneyVerifyVO;
@@ -19,6 +20,9 @@ import java.util.List;
 */
 public interface HoneyVerifyService extends IService<HoneyVerify> {
 
+    String getTotalResult (String algoResult,String textureResult);
+    HoneyVerifyVO getValidate(String imagePath ,String type);
+    ApiResponse validateImage(String imagePath ,String type);
     int insertHoney(HoneyVerifyDTO dto);
 
     HoneyVerify  insertHoneyGetId(HoneyVerifyDTO dto);

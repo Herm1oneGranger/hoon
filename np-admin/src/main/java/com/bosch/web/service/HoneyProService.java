@@ -16,6 +16,9 @@ import java.util.List;
  */
 public interface HoneyProService extends IService<HoneyPro> {
 
+
+    String checkDuplicates(List<HoneyPro> doList);
+    List<HoneyPro> processHoneyProList(List<HoneyPro> list);
     int insertHoney(HoneyProDTO dto);
 
 
@@ -27,7 +30,7 @@ public interface HoneyProService extends IService<HoneyPro> {
 
     int deleteAreaByIds(Integer[] ids);
 
-    String tokenGen(HoneyProDTO dto);
+    String tokenGen();
 
     int updateStatus(HoneyProDTO dto);
 

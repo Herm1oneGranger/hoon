@@ -20,7 +20,8 @@ import java.util.Date;
 
 @Data
 public class HoneyVerifyDTO extends PageDomain {
-
+    @ApiModelProperty(value = "year")
+    private String year;
 
     @ApiModelProperty(value = "dateType")
     private String dateType;

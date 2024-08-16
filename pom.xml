@@ -256,9 +256,25 @@
             <properties>
                 <profiles.active>/home/dc/ico_img/</profiles.active>
                 <datasource.host>143.64.233.91</datasource.host>
+                <datasource.user>root</datasource.user>
+                <python.url>http://143.64.233.91:8090</python.url>
+                <path.url>/home/soroot/dc/nameplate</path.url>
                 <datasource.password>123456</datasource.password>
                 <redis.host>143.64.233.91</redis.host>
                 <redis.password>123456</redis.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>honey</id>
+            <properties>
+                <profiles.active>/home/dc/ico_img/</profiles.active>
+                <datasource.host>10.113.236.48</datasource.host>
+                <python.url>http://localhost:8090</python.url>
+                <path.url> </path.url>
+                <datasource.user>rootuser</datasource.user>
+                <datasource.password>password</datasource.password>
+                <redis.host>127.0.0.1</redis.host>
+                <redis.password></redis.password>
             </properties>
         </profile>
         <profile>
@@ -266,6 +282,9 @@
             <properties>
                 <profiles.active>C:/Users/ZPO2SGH/Projects/DC-Nameplate/dc-nameplate/doc/ICO_IMG</profiles.active>
                 <datasource.host>localhost</datasource.host>
+                <path.url>/home/soroot/dc/nameplate</path.url>
+                <python.url>http://143.64.233.91:8090</python.url>
+                <datasource.user>root</datasource.user>
                 <datasource.password>123456</datasource.password>
                 <redis.host>127.0.0.1</redis.host>
                 <redis.password></redis.password>

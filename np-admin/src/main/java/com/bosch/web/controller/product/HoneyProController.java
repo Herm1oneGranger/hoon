@@ -3,6 +3,7 @@ package com.bosch.web.controller.product;
 import com.bosch.common.annotation.Log;
 import com.bosch.common.core.controller.BaseController;
 import com.bosch.common.core.domain.AjaxResult;
+import com.bosch.common.core.domain.entity.SysUser;
 import com.bosch.common.core.page.TableDataInfo;
 import com.bosch.common.enums.BusinessType;
 import com.bosch.common.utils.BeanConverUtil;
@@ -54,15 +55,39 @@ public class HoneyProController extends BaseController {
         List<HoneyPro> list = honeyProService.getList(dto);
         return getDataTable(list);
     }
+    @Log(title = "产品管理", businessType = BusinessType.IMPORT)
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file) throws Exception
+    {
+        if(file==null) return error("文件为空");
 
+        ExcelUtil<HoneyPro> util = new ExcelUtil<HoneyPro>(HoneyPro.class);
+        List<HoneyPro> list = util.importExcel(file.getInputStream());
+
+        //赋值
+        List<HoneyPro> doList = honeyProService.processHoneyProList(list);
+        //校验重复
+
+        String check = honeyProService.checkDuplicates(doList);
+        if (check!=null){
+            return success("存在重复数据:"+check);
+        }
+
+        boolean b = honeyProService.saveBatch(doList);
+        return b?success():error();
+    }
 
     @ApiOperation("导出产品列表")
     @Log(title = logTitle, businessType = BusinessType.EXPORT)
-//    @PreAuthorize("@ss.hasPermi('honey:verify:export')")
     @PostMapping("/export")
-    public void export(HttpServletResponse response, HoneyProDTO dto) {
-//        startPage();
+    public void export(HttpServletResponse response, @RequestBody HoneyProDTO dto) {
         List<HoneyPro> list = honeyProService.getList(dto);
+
+        list.forEach(r->
+        {
+            //域名?token=
+            r.setToken("setsantifake.honeywell.com.cn?token="+r.getToken());
+        });
         ExcelUtil<HoneyPro> util = new ExcelUtil<HoneyPro>(HoneyPro.class);
         util.exportExcel(response, list, "产品列表数据");
 
@@ -78,6 +103,13 @@ public class HoneyProController extends BaseController {
     public AjaxResult add( @RequestBody HoneyProDTO dto) {
 
         //校验重复
+        HoneyPro honeyPro = BeanConverUtil.conver(dto, HoneyPro.class);
+        List<HoneyPro> doList=new ArrayList<>();
+        doList.add(honeyPro);
+        String check = honeyProService.checkDuplicates(doList);
+        if (check!=null){
+            return success("存在重复数据:"+check);
+        }
 
         //插入
         int i = honeyProService.insertHoney( dto);
@@ -85,14 +117,22 @@ public class HoneyProController extends BaseController {
         return toAjax(i);
     }
 
-    /**
-     * 新增产品
-     */
+
     @ApiOperation("更新产品信息")
 
     @Log(title = logTitle, businessType = BusinessType.UPDATE)
     @PostMapping("/update")
     public AjaxResult update(@RequestBody HoneyProDTO dto ) {
+
+        //校验重复
+        HoneyPro honeyPro = BeanConverUtil.conver(dto, HoneyPro.class);
+        List<HoneyPro> doList=new ArrayList<>();
+        doList.add(honeyPro);
+        String check = honeyProService.checkDuplicates(doList);
+        if (check!=null){
+            return success("存在重复数据:"+check);
+        }
+
         int i = honeyProService.updateHoney(dto);
 
         return toAjax(i);

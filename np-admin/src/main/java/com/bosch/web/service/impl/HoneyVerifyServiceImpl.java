@@ -3,11 +3,13 @@ package com.bosch.web.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.common.utils.BeanConverUtil;
+import com.bosch.framework.web.service.UserDetailsServiceImpl;
 import com.bosch.web.constant.MsgConstants;
 import com.bosch.web.domain.HoneyPro;
 import com.bosch.web.domain.HoneyVerify;
 import com.bosch.web.domain.dto.HoneyVerifyDTO;
 import com.bosch.web.domain.dto.PVerifyDTO;
+import com.bosch.web.domain.vo.ApiResponse;
 import com.bosch.web.domain.vo.HoneyDashVO;
 import com.bosch.web.domain.vo.HoneyVerifyResultVO;
 import com.bosch.web.domain.vo.HoneyVerifyVO;
@@ -18,20 +20,24 @@ import com.bosch.web.mapper.HoneyVerifyMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.poi.ss.formula.functions.T;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.keyvalue.core.query.KeyValueQuery;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +48,7 @@ import java.util.stream.Collectors;
 @Service
 public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, HoneyVerify>
         implements HoneyVerifyService {
-
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
     @Autowired
     private HoneyVerifyMapper mapper;
 
@@ -50,7 +56,102 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
     private HoneyProService proService;
 
     @Value("${api.python-url}")
-    private String baseUrl;
+    private static  String baseUrl;
+
+    private static final String valURL = baseUrl+"/validate";
+
+    private static final String iqaURL = baseUrl+"/iqa";
+
+
+    @Override
+    public String getTotalResult(String algoResult, String textureResult) {
+        //纹理真  算法真
+        if (MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOSUCCESS.equals(algoResult) ){
+            return MsgConstants.TRUE;
+        }
+        //纹理真  算法假
+        if (MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOFAIL.equals(algoResult) ){
+            return MsgConstants.TRUE;
+        }
+        //纹理假  算法真
+        if (!MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOSUCCESS.equals(algoResult) ){
+            return MsgConstants.MANUAL;
+        }
+        //纹理假  算法假
+        if (!MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOFAIL.equals(algoResult) ){
+            return MsgConstants.TRUE;
+        }
+        // 纹理假  算法假(时间久)
+        if (!MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOTIMEFAIL.equals(algoResult) ){
+            return MsgConstants.MANUAL;
+        }
+        return null;
+    }
+
+    public HoneyVerifyVO getValidate(String imagePath , String type){
+        HoneyVerifyVO vo=new HoneyVerifyVO();
+
+
+        ApiResponse apiResponse = validateImage(imagePath, type);
+
+        if (apiResponse==null){
+            vo.setResult("算法api请求失败");
+            vo.setMsg(MsgConstants.IQAFAILED);
+        }else {
+            //假
+            if("0".equals(apiResponse.getCode())){
+                vo.setResult(MsgConstants.FAKE);
+                vo.setMsg("纹理识别为假");
+            }
+            //真
+            else if("1".equals(apiResponse.getCode())){
+                vo.setResult(MsgConstants.TRUE);
+                vo.setMsg("纹理识别为真");
+            }
+            //未过IQA
+            if("2".equals(apiResponse.getCode())){
+                vo.setResult(MsgConstants.IQAFAILED);
+                vo.setMsg(apiResponse.getMessage());
+            }
+
+        }
+
+        return vo;
+    }
+
+    public  ApiResponse validateImage(String imagePath ,String type) {
+        String URL="";
+        if ("0".equals(type)){
+            URL= iqaURL;
+        }else {
+            URL= valURL;
+        }
+        RestTemplate restTemplate = new RestTemplate();
+        ObjectMapper objectMapper = new ObjectMapper();
+        // 设置请求头
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        // 设置请求体
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("imageTokenPath", imagePath);
+
+        // 创建请求实体
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        // 发送请求
+        ResponseEntity<String> response = restTemplate.exchange(URL, HttpMethod.POST, requestEntity, String.class);
+
+        // 返回响应结果
+        try {
+            // 将响应的 JSON 字符串转换为 ApiResponse 对象
+            return objectMapper.readValue(response.getBody(), ApiResponse.class);
+        } catch (Exception e) {
+            log.error("请求算法接口异常 :"+e.getMessage());
+            return null;
+        }
+
+    }
 
     @Override
     public int insertHoney(HoneyVerifyDTO dto) {
@@ -100,10 +201,31 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
     public HoneyVerifyVO algoVerify(HoneyVerifyDTO dto) {
         List<HoneyVerifyResultVO> list = mapper.getList(dto);
         HoneyVerifyVO vo = new HoneyVerifyVO();
+        vo.setResult(MsgConstants.ALOSUCCESS);
+        vo.setMsg(MsgConstants.ALOSUCCESSTEXT);
+        //特殊：时间过久
+        List<HoneyPro> proList = proService.getToken(dto.getToken());
+        if(CollectionUtils.isNotEmpty(proList)){
+            HoneyPro honeyPro = proList.get(0);// 获取今天的日期
+            Date createTime = honeyPro.getCreateTime();
+            LocalDate today = LocalDate.now();
+            // 将 java.util.Date 转换为 java.time.LocalDate
+            LocalDate creationDate = createTime.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+            // 计算两个日期之间的差距
+            Period period = Period.between(creationDate, today);
+            // 判断是否超过一年
+            if (period.getYears() >= 1){
+                vo.setResult(MsgConstants.ALOTIMEFAIL);
+                vo.setMsg(MsgConstants.OVERONEYEAR);
+                return vo;
+            }
+        }
 
         //  1.同一标签扫码次数过多。标签累计扫码次数超过5次。
         if (list.size() > 5) {
-            vo.setResult(MsgConstants.TEXTUREFAIL);
+            vo.setResult(MsgConstants.ALOFAIL);
             vo.setMsg(MsgConstants.OVERFIVE);
             return vo;
         }
@@ -114,7 +236,7 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
                 .distinct() // 去重
                 .collect(Collectors.toList());
         if (formattedPositions != null && formattedPositions.size() > 3) {
-            vo.setResult(MsgConstants.TEXTUREFAIL);
+            vo.setResult(MsgConstants.ALOFAIL);
             vo.setMsg(MsgConstants.OVERTHREE);
             return vo;
         }
@@ -130,7 +252,7 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
                     if (i != j) {
                         HoneyVerifyResultVO item2 = dailyRecords.get(j);
                         if (!item1.getAppId().equals(item2.getAppId()) && !item1.getPosition().equals(item2.getPosition())) {
-                            vo.setResult(MsgConstants.TEXTUREFAIL);
+                            vo.setResult(MsgConstants.ALOFAIL);
                             vo.setMsg(MsgConstants.OVERTWO);
                             return vo;
                         }

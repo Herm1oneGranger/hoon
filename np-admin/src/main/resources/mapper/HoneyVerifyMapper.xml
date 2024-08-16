@@ -107,9 +107,10 @@
           and v.token in (SELECT token
                           FROM honey_pro
                           where 1 = 1
-                            and material_code = #{materialCode}
-                            and DATE_FORMAT(create_time, '%Y-%m-%d') = #{createTimeFormat}
+        <if test="materialCode != null and materialCode != ''">  and material_code = #{materialCode}</if>
+        <if test="createTimeFormat != null and createTimeFormat != ''">and DATE_FORMAT(create_time, '%Y-%m-%d') = #{createTimeFormat}</if>
                           )
+        <if test="year != null and year != ''">    AND YEAR(v.create_time) = #{year} </if>
 
     </select>
 </mapper>

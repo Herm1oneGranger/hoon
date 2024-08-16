@@ -9,6 +9,7 @@ import java.util.Date;
 
 import com.bosch.common.annotation.Excel;
 import com.bosch.common.core.domain.BaseEntity;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -86,6 +87,18 @@ public class HoneyPro extends BaseEntity {
     @Excel(name = "sold_to")
     @TableField(value = "sold_to")
     private String soldTo;
+
+    @Excel(name = "model")
+    @TableField(value = "model")
+    private String model;
+
+    @Excel(name = "specification")
+    @TableField(value = "specification")
+    private String specification;
+
+    @Excel(name = "power")
+    @TableField(value = "power")
+    private String power;
 
     /**
      * 

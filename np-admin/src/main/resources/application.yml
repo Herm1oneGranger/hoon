@@ -186,4 +186,5 @@ rocketmq:
     topic: my-topic
 
 api:
-  python-url: localhost:8080
+  python-url: @python.url@
+  path-url: @path.url@

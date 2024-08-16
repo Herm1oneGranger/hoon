@@ -70,17 +70,18 @@ public class HoneyDashController extends BaseController {
     public R list2(@RequestBody HoneyVerifyDTO dto) {
 
         List<HoneyDashVO> list=new ArrayList<>();
-        // 假设dto.getCreateTime()返回一个Date对象
-        Date createTime = dto.getCreateTime();
-        // 创建SimpleDateFormat对象，并设置所需的日期格式
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        // 将createTime格式化为字符串
-        String formattedDate = dateFormat.format(createTime);
+        String formattedDate="";
+        if(dto!=null && dto.getCreateTime()!=null){
+            // 假设dto.getCreateTime()返回一个Date对象
+            Date createTime = dto.getCreateTime();
+            // 创建SimpleDateFormat对象，并设置所需的日期格式
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            // 将createTime格式化为字符串
+            formattedDate = dateFormat.format(createTime);
+        }
         dto.setCreateTimeFormat(formattedDate);
         List<HoneyVerifyResultVO> dash = service.getDash2(dto);
-
-            list = service.getMonthlyStats(dash);
-
+        list = service.getMonthlyStats(dash);
 
         return R.ok(list);
     }
