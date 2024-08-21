@@ -41,12 +41,14 @@ public class HoneyProServiceImpl extends ServiceImpl<HoneyProMapper, HoneyPro>
                 queryWrapper.eq(HoneyPro::getMaterial, honeyPro.getMaterial())
                         .eq(HoneyPro::getSo, honeyPro.getSo())
                         .eq(HoneyPro::getItemNo, honeyPro.getItemNo())
+                        .eq(HoneyPro::getOrderNo, honeyPro.getOrderNo())
                         .eq(HoneyPro::getDeleteFlag, "0");
                 // 判断数据库中是否存在相同的记录
                 if (this.count(queryWrapper) > 0){
                     return "material:"+honeyPro.getMaterial() +
                             " so:"+honeyPro.getSo()+
-                            " itemNo:"+honeyPro.getItemNo();
+                            " itemNo:"+honeyPro.getItemNo()+
+                            " 订单序列号:"+honeyPro.getOrderNo();
                 }
 
             }

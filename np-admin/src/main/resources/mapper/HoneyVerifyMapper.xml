@@ -51,7 +51,7 @@
         <if test="proId != null ">and v.pro_id = #{proId}</if>
         <if test="createTimeStart != null">and v.create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
         <if test="createTimeEnd != null">and v.create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
-
+        order by v.create_time desc
     </select>
 
     <insert id="insertHoneyVerify" parameterType="com.bosch.web.domain.HoneyVerify">

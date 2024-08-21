@@ -166,7 +166,7 @@ public class HoneyVerifyController extends BaseController {
 
         HoneyVerifyVO checkToken = service.checkToken(dto);
         if (StringUtils.isNotEmpty(checkToken.getResult())) {
-            return success(checkToken);
+            return error("token不存在");
         }
 
 
@@ -222,7 +222,7 @@ public class HoneyVerifyController extends BaseController {
         HoneyVerifyVO checkToken = service.checkToken(dto);
         if (StringUtils.isNotEmpty(checkToken.getResult())) {
             logger.info("checkToken:"+dto.getToken() +" 不在库中");
-            return success(checkToken);
+            return error("Token:"+dto.getToken() +" 不在库中");
         }
 
         // 解码Base64字符串

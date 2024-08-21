@@ -95,6 +95,9 @@ public class HoneyFeedBackController extends BaseController {
     @Log(title = logTitle, businessType = BusinessType.UPDATE)
     @PostMapping("/update")
     public AjaxResult update(@RequestBody HoneyFeedbackDTO dto) {
+        if ("0".equals(dto.getStatus())){
+            return error("已处理状态无法更新");
+        }
         int i = service.update(dto);
         return toAjax(i);
     }

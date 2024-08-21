@@ -70,7 +70,7 @@ public class HoneyProController extends BaseController {
 
         String check = honeyProService.checkDuplicates(doList);
         if (check!=null){
-            return success("存在重复数据:"+check);
+            return error("存在重复数据:"+check);
         }
 
         boolean b = honeyProService.saveBatch(doList);
@@ -108,7 +108,7 @@ public class HoneyProController extends BaseController {
         doList.add(honeyPro);
         String check = honeyProService.checkDuplicates(doList);
         if (check!=null){
-            return success("存在重复数据:"+check);
+            return error("存在重复数据:"+check);
         }
 
         //插入
@@ -130,7 +130,7 @@ public class HoneyProController extends BaseController {
         doList.add(honeyPro);
         String check = honeyProService.checkDuplicates(doList);
         if (check!=null){
-            return success("存在重复数据:"+check);
+            return error("存在重复数据:"+check);
         }
 
         int i = honeyProService.updateHoney(dto);
