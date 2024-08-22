@@ -1,12 +1,8 @@
 package com.bosch.framework.web.service;
 
-import javax.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpUtil;
+import com.alibaba.fastjson2.JSONObject;
 import com.bosch.common.constant.CacheConstants;
 import com.bosch.common.constant.Constants;
 import com.bosch.common.constant.UserConstants;
@@ -14,20 +10,29 @@ import com.bosch.common.core.domain.entity.SysUser;
 import com.bosch.common.core.domain.model.LoginUser;
 import com.bosch.common.core.redis.RedisCache;
 import com.bosch.common.exception.ServiceException;
-import com.bosch.common.exception.user.BlackListException;
-import com.bosch.common.exception.user.CaptchaException;
-import com.bosch.common.exception.user.CaptchaExpireException;
-import com.bosch.common.exception.user.UserNotExistsException;
-import com.bosch.common.exception.user.UserPasswordNotMatchException;
+import com.bosch.common.exception.user.*;
 import com.bosch.common.utils.DateUtils;
 import com.bosch.common.utils.MessageUtils;
 import com.bosch.common.utils.StringUtils;
 import com.bosch.common.utils.ip.IpUtils;
+import com.bosch.framework.config.AdfsConfig;
 import com.bosch.framework.manager.AsyncManager;
 import com.bosch.framework.manager.factory.AsyncFactory;
 import com.bosch.framework.security.context.AuthenticationContextHolder;
 import com.bosch.system.service.ISysConfigService;
 import com.bosch.system.service.ISysUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 登录校验方法
@@ -39,6 +44,9 @@ public class SysLoginService
 {
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private AdfsConfig  adfsConfig;
 
     @Resource
     private AuthenticationManager authenticationManager;
@@ -98,6 +106,57 @@ public class SysLoginService
         recordLoginInfo(loginUser.getUserId());
         // 生成token
         return tokenService.createToken(loginUser);
+    }
+
+
+    /**
+     * bosch 通过Azure AD验证进行单点登录
+     * @param code
+     */
+    public void ssoLogin(String code, HttpServletResponse response) throws IOException {
+        System.out.println("sso code: "+code);
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("client_id", adfsConfig.getClientId());
+        paramMap.put("client_secret", adfsConfig.getClientSecret());
+        paramMap.put("grant_type", adfsConfig.getGrantTypeAuthorizationCode());
+        paramMap.put("code", code);
+        String responseStr = HttpUtil.post(adfsConfig.getTokenEndpoint(), paramMap);
+        System.out.println(responseStr);
+        JSONObject jsonObject = JSONObject.parseObject(responseStr);
+        if (jsonObject.containsKey("access_token")) {
+            String accessToken = jsonObject.get("access_token").toString();
+            Map<String, String > heads = new HashMap<>(10);
+            // 使用json发送请求，下面的是必须的
+            heads.put("Authorization", accessToken);
+            String userInoResStr = HttpRequest.get(adfsConfig.getUserInfoUrl())
+                    .headerMap(heads, false)
+                    .timeout(20000) //有个坑超过21秒会导致失效，注意
+                    .execute().body();
+            JSONObject userInoResObject = JSONObject.parseObject(userInoResStr);
+            if (userInoResObject.containsKey("userPrincipalName")) {
+                String ntAccount = userInoResObject.get("userPrincipalName").toString().split("@")[0];
+//                SysUser user = userService.selectUserByUserName(ntAccount);
+//                if (user != null) {
+////                    LoginUser loginUser = new LoginUser(user.getUserId(), user.getDeptId(), user, permissionService.getMenuPermission(user));
+//                    recordLoginInfo(loginUser.getUserId());
+//                    // 生成token
+//                    String token = tokenService.createToken(loginUser);
+////                    log.info("SsoLogin:" + loginUrl + "?token=" + token);
+//                    response.sendRedirect(loginUrl + "?token=" + token);
+//                } else {
+////                    log.error("Can not find user in system！\n" + jsonObject.get("error_description"));
+//                    response.sendRedirect(noRoleUrl);
+//                }
+            } else {
+//                log.error("sso获取userInfo失败！\n" + jsonObject.get("error_description"));
+                response.sendRedirect("noRoleUrl");
+//                throw new ServiceException("Failed to obtain user info!");
+            }
+        } else {
+//            log.error("sso登录失败！\n" + jsonObject.get("error_description"));
+            response.sendRedirect("noRoleUrl");
+//            throw new ServiceException("Failed to obtain Microsoft AD token!");
+        }
     }
 
     /**

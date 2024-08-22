@@ -3,19 +3,14 @@ package com.bosch.web.controller.product;
 import com.bosch.common.annotation.Log;
 import com.bosch.common.core.controller.BaseController;
 import com.bosch.common.core.domain.AjaxResult;
-import com.bosch.common.core.domain.entity.SysUser;
 import com.bosch.common.core.page.TableDataInfo;
 import com.bosch.common.enums.BusinessType;
 import com.bosch.common.utils.BeanConverUtil;
 import com.bosch.common.utils.poi.ExcelUtil;
 import com.bosch.web.domain.HoneyPro;
-import com.bosch.web.domain.HoneyType;
+import com.bosch.web.domain.HoneyProExcel;
 import com.bosch.web.domain.dto.HoneyProDTO;
-import com.bosch.web.domain.dto.HoneyTypeDTO;
-import com.bosch.web.domain.dto.HoneyVerifyDTO;
-import com.bosch.web.domain.vo.HoneyVerifyResultVO;
 import com.bosch.web.service.HoneyProService;
-import com.bosch.web.service.HoneyTypeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +50,7 @@ public class HoneyProController extends BaseController {
         List<HoneyPro> list = honeyProService.getList(dto);
         return getDataTable(list);
     }
+    @ApiOperation("导入")
     @Log(title = "产品管理", businessType = BusinessType.IMPORT)
     @PostMapping("/importData")
     public AjaxResult importData(MultipartFile file) throws Exception
@@ -70,7 +66,7 @@ public class HoneyProController extends BaseController {
 
         String check = honeyProService.checkDuplicates(doList);
         if (check!=null){
-            return error("存在重复数据:"+check);
+            return error(check);
         }
 
         boolean b = honeyProService.saveBatch(doList);
@@ -151,11 +147,17 @@ public class HoneyProController extends BaseController {
     }
 
     @ApiOperation("删除产品信息")
-
     @Log(title = logTitle, businessType = BusinessType.UPDATE)
-
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Integer[] ids) {
         return toAjax(honeyProService.deleteAreaByIds(ids));
+    }
+
+    @ApiOperation("下载模板")
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response)
+    {
+        ExcelUtil<HoneyProExcel> util = new ExcelUtil<HoneyProExcel>(HoneyProExcel.class);
+        util.importTemplateExcel(response, "产品信息");
     }
 }

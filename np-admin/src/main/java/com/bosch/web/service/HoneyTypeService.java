@@ -1,10 +1,8 @@
 package com.bosch.web.service;
 
-import com.bosch.web.domain.HoneyType;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.web.domain.HoneyType;
 import com.bosch.web.domain.dto.HoneyTypeDTO;
-import com.bosch.web.domain.dto.ProductDTO;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,6 +18,7 @@ public interface HoneyTypeService extends IService<HoneyType> {
 
 
     int updateHoney(HoneyTypeDTO dto);
+    String valid(HoneyTypeDTO dto);
     List<HoneyType> getList(HoneyTypeDTO dto);
 
     public int deleteAreaByIds(Integer[] ids);

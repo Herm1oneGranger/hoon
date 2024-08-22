@@ -4,46 +4,19 @@ import com.alibaba.fastjson2.JSON;
 import com.bosch.common.annotation.Log;
 import com.bosch.common.core.controller.BaseController;
 import com.bosch.common.core.domain.AjaxResult;
-import com.bosch.common.core.domain.R;
 import com.bosch.common.core.page.TableDataInfo;
 import com.bosch.common.enums.BusinessType;
-import com.bosch.common.utils.BeanConverUtil;
-import com.bosch.common.utils.StringUtils;
-import com.bosch.common.utils.poi.ExcelUtil;
-import com.bosch.web.constant.MsgConstants;
 import com.bosch.web.domain.HoneyFeedback;
-import com.bosch.web.domain.HoneyVerify;
-import com.bosch.web.domain.PImages;
 import com.bosch.web.domain.dto.HoneyFeedbackDTO;
-import com.bosch.web.domain.dto.HoneyVerifyDTO;
-import com.bosch.web.domain.dto.PVerifyDTO;
-import com.bosch.web.domain.dto.WxDTO;
 import com.bosch.web.domain.vo.HoneyFeedbackVO;
-import com.bosch.web.domain.vo.HoneyVerifyResultVO;
-import com.bosch.web.domain.vo.HoneyVerifyVO;
 import com.bosch.web.service.HoneyFeedbackService;
-import com.bosch.web.service.HoneyVerifyService;
 import com.bosch.web.service.PImagesService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @Author: pink
@@ -95,9 +68,15 @@ public class HoneyFeedBackController extends BaseController {
     @Log(title = logTitle, businessType = BusinessType.UPDATE)
     @PostMapping("/update")
     public AjaxResult update(@RequestBody HoneyFeedbackDTO dto) {
-        if ("0".equals(dto.getStatus())){
-            return error("已处理状态无法更新");
+        if (dto.getId()!=null){
+            HoneyFeedback byId = service.getById(dto.getId());
+            if (byId!=null){
+                if (1==byId.getStatus()){
+                    return error("已处理状态无法更新");
+                }
+            }
         }
+
         int i = service.update(dto);
         return toAjax(i);
     }

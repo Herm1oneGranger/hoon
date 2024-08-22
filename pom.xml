@@ -39,6 +39,7 @@
     <dependencyManagement>
         <dependencies>
 
+
             <!-- SpringBoot的依赖配置-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -255,10 +256,10 @@
             <id>mic</id>
             <properties>
                 <profiles.active>/home/dc/ico_img/</profiles.active>
-                <datasource.host>143.64.233.91</datasource.host>
+                <datasource.host>143.64.233.91:3307</datasource.host>
                 <datasource.user>root</datasource.user>
                 <python.url>http://143.64.233.91:8090</python.url>
-                <path.url>/home/soroot/dc/nameplate</path.url>
+                <path.url>/home/soroot/dc/nameplate/algo/images</path.url>
                 <datasource.password>123456</datasource.password>
                 <redis.host>143.64.233.91</redis.host>
                 <redis.password>123456</redis.password>
@@ -268,7 +269,7 @@
             <id>honey</id>
             <properties>
                 <profiles.active>/home/dc/ico_img/</profiles.active>
-                <datasource.host>10.113.236.48</datasource.host>
+                <datasource.host>10.113.236.148:3306</datasource.host>
                 <python.url>http://localhost:8090</python.url>
                 <path.url> </path.url>
                 <datasource.user>rootuser</datasource.user>
@@ -281,7 +282,7 @@
             <id>dev</id>
             <properties>
                 <profiles.active>C:/Users/ZPO2SGH/Projects/DC-Nameplate/dc-nameplate/doc/ICO_IMG</profiles.active>
-                <datasource.host>localhost</datasource.host>
+                <datasource.host>localhost:3306</datasource.host>
                 <path.url>/home/soroot/dc/nameplate</path.url>
                 <python.url>http://143.64.233.91:8090</python.url>
                 <datasource.user>root</datasource.user>
@@ -294,7 +295,7 @@
             <id>uat</id>
             <properties>
                 <profiles.active>/home/dc/ico_img/</profiles.active>
-                <datasource.host>163.228.92.31</datasource.host>
+                <datasource.host>163.228.92.31:3306</datasource.host>
                 <datasource.password>DcNP!Mysql123</datasource.password>
                 <redis.host>163.228.92.31</redis.host>
                 <redis.password>123456</redis.password>
@@ -304,7 +305,7 @@
             <id>prd</id>
             <properties>
                 <profiles.active>/home/dc/ico_img/</profiles.active>
-                <datasource.host>163.228.92.31</datasource.host>
+                <datasource.host>163.228.92.31:3306</datasource.host>
                 <datasource.password>DcNP!Mysql123</datasource.password>
                 <redis.host>dc-redis</redis.host>
                 <redis.password>123456</redis.password>

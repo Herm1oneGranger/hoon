@@ -7,9 +7,9 @@ import com.bosch.common.utils.BeanConverUtil;
 import com.bosch.web.domain.HoneyPro;
 import com.bosch.web.domain.HoneyType;
 import com.bosch.web.domain.dto.HoneyProDTO;
+import com.bosch.web.mapper.HoneyProMapper;
 import com.bosch.web.mapper.HoneyTypeMapper;
 import com.bosch.web.service.HoneyProService;
-import com.bosch.web.mapper.HoneyProMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * @author GUZ1CGD4
@@ -33,21 +32,34 @@ public class HoneyProServiceImpl extends ServiceImpl<HoneyProMapper, HoneyPro>
     @Autowired
     private HoneyProMapper mapper;
 
-
+    @Autowired
+    private HoneyTypeMapper typeMapper;
     public String checkDuplicates(List<HoneyPro> doList) {
         if (CollectionUtils.isNotEmpty(doList)) {
             for (HoneyPro honeyPro : doList) {
+                //判断类别是否存在
+                LambdaQueryWrapper<HoneyType> typeWrapper = new LambdaQueryWrapper<>();
+                typeWrapper.eq(HoneyType::getCode, honeyPro.getMaterialCode())
+                        .eq(HoneyType::getDeleteFlag, "0");
+
+                HoneyType honeyType = typeMapper.selectOne(typeWrapper);
+                if (null==honeyType){
+                    return "物料类别不存在：" +honeyPro.getMaterialCode();
+                }
+
+
                 LambdaQueryWrapper<HoneyPro> queryWrapper = new LambdaQueryWrapper<>();
                 queryWrapper.eq(HoneyPro::getMaterial, honeyPro.getMaterial())
                         .eq(HoneyPro::getSo, honeyPro.getSo())
                         .eq(HoneyPro::getItemNo, honeyPro.getItemNo())
                         .eq(HoneyPro::getOrderNo, honeyPro.getOrderNo())
                         .eq(HoneyPro::getDeleteFlag, "0");
+                HoneyPro one = this.getOne(queryWrapper);
                 // 判断数据库中是否存在相同的记录
-                if (this.count(queryWrapper) > 0){
-                    return "material:"+honeyPro.getMaterial() +
-                            " so:"+honeyPro.getSo()+
-                            " itemNo:"+honeyPro.getItemNo()+
+                if (one!=null && one.getId()!=honeyPro.getId()){
+                    return "存在重复数据 "+"物料号:"+honeyPro.getMaterial() +
+                            " 订单号:"+honeyPro.getSo()+
+                            " 行号:"+honeyPro.getItemNo()+
                             " 订单序列号:"+honeyPro.getOrderNo();
                 }
 

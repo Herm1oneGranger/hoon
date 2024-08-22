@@ -1,0 +1,22 @@
+adfs:
+    # Token Endpoint
+#    token_endpoint: https://login.microsoftonline.com/0ae51e19-07c8-4e4b-bb6d-648ee58410f4/oauth2/v2.0/token
+    # client if from IAP
+#    client_id: be41feb6-69ea-4d76-ba09-9ac58ac5e2a8 # "你的client_id"
+    token_endpoint: https://qauthn.honeywell.cn/as/authorization.oauth2
+    client_id: Client_bvva92fcse2u # "你的client_id"
+#    redirect_uri: "http://localhost:8082/ssoLogin"
+    redirect_uri: "https://setsantifake.honeywell.com.cn/ssoLogin"
+    user_info_url: "https://graph.microsoft.com/v1.0/me"
+    # client_secret from IAM
+#    client_secret: q.Q8Q~Zq1vFOOnh5IIs-R-rxkYTpNhHxUjXNobTN #"你的client_secret" 77q#fDe1Pc(.RlXS
+
+    client_secret: Fr#9sM02!xPHS.CE #"你的client_secret" 77q#fDe1Pc(.RlXS
+    # scope
+    scope: "user.read email openid profile"
+    #  grant_type for authorization_code
+    grant_type_authorization_code: "authorization_code"
+    # code verifier(base on challenge code)
+    code_verifier: ""
+    #  grant_type for refresh token
+    grant_type_refresh_token: "refresh_token"

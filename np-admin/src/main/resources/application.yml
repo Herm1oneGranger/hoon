@@ -59,7 +59,7 @@ spring:
     # 国际化资源文件路径
     basename: i18n/messages
   profiles:
-    active: druid
+    active: druid,sso
   # 文件上传
   servlet:
     multipart:
@@ -177,13 +177,13 @@ xss:
 
 depts: 测试部门,工厂部门
 
-rocketmq:
-  name-server: localhost:9876
-  producer:
-    group: my-producer-group
-  consumer:
-    group: my-consumer-group
-    topic: my-topic
+#rocketmq:
+#  name-server: localhost:9876
+#  producer:
+#    group: my-producer-group
+#  consumer:
+#    group: my-consumer-group
+#    topic: my-topic
 
 api:
   python-url: @python.url@

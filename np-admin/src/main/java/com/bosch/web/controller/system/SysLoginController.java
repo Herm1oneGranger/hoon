@@ -1,12 +1,5 @@
 package com.bosch.web.controller.system;
 
-import java.util.List;
-import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import com.bosch.common.constant.Constants;
 import com.bosch.common.core.domain.AjaxResult;
 import com.bosch.common.core.domain.entity.SysMenu;
@@ -16,6 +9,13 @@ import com.bosch.common.utils.SecurityUtils;
 import com.bosch.framework.web.service.SysLoginService;
 import com.bosch.framework.web.service.SysPermissionService;
 import com.bosch.system.service.ISysMenuService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 登录验证
@@ -49,6 +49,17 @@ public class SysLoginController
                 loginBody.getUuid());
         ajax.put(Constants.TOKEN, token);
         return ajax;
+    }
+
+    /**
+     * 单点登录 SSO
+     */
+    @GetMapping("/ssoLogin")
+    public void ssoLogin(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
+        System.out.println("sso登录开始 code :"+code);
+        loginService.ssoLogin(code, response);
+//        response.sendRedirect(loginUrl + "?token=" + token);
+//        return "redirect:" + loginUrl + "?token=" + token;
     }
 
     /**

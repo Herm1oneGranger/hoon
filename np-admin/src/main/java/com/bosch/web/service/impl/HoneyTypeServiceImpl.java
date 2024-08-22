@@ -1,12 +1,12 @@
 package com.bosch.web.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.common.utils.BeanConverUtil;
 import com.bosch.web.domain.HoneyType;
 import com.bosch.web.domain.dto.HoneyTypeDTO;
-import com.bosch.web.service.HoneyTypeService;
 import com.bosch.web.mapper.HoneyTypeMapper;
-import io.swagger.annotations.ApiModelProperty;
+import com.bosch.web.service.HoneyTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,10 +49,24 @@ public class HoneyTypeServiceImpl extends ServiceImpl<HoneyTypeMapper, HoneyType
     @Override
     public int updateHoney(HoneyTypeDTO dto) {
         HoneyType honeyType = BeanConverUtil.conver(dto, HoneyType.class);
+
+
+
         int i = mapper.updateById(honeyType);
         return i;
     }
 
+    public String valid(HoneyTypeDTO dto){
+        LambdaQueryWrapper<HoneyType> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(HoneyType::getCode, dto.getCode())
+                .eq(HoneyType::getDeleteFlag, "0");
+        HoneyType one = this.getOne(queryWrapper);
+        // 判断数据库中是否存在相同的记录
+        if (one!=null && one.getId()!=dto.getId()){
+            return "code:"+dto.getCode() ;
+        }
+        return null;
+    }
     @Override
     public List<HoneyType> getList(HoneyTypeDTO dto) {
         List<HoneyType> list = mapper.getList(dto);

@@ -51,6 +51,12 @@
         <if test="proId != null ">and v.pro_id = #{proId}</if>
         <if test="createTimeStart != null">and v.create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
         <if test="createTimeEnd != null">and v.create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
+        <if test="material != null and material != ''">and p.material like concat('%', #{material}, '%')</if>
+        <if test="token != null and token != ''">and v.token  like concat('%', #{token}, '%')</if>
+        <if test="materialCode != null and materialCode != ''">and p.material_code  like concat('%', #{materialCode}, '%')</if>
+        <if test="so != null and so != ''">and p.so  like concat('%', #{so}, '%') </if>
+        <if test="orderQua != null and orderQua != ''">and p.order_qua  like concat('%', #{orderQua}, '%')</if>
+        <if test="orderNo != null and orderNo != ''">and p.order_no  like concat('%', #{orderNo}, '%')</if>
         order by v.create_time desc
     </select>
 

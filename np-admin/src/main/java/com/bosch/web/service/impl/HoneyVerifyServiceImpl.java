@@ -13,17 +13,13 @@ import com.bosch.web.domain.vo.ApiResponse;
 import com.bosch.web.domain.vo.HoneyDashVO;
 import com.bosch.web.domain.vo.HoneyVerifyResultVO;
 import com.bosch.web.domain.vo.HoneyVerifyVO;
-import com.bosch.web.mapper.HoneyProMapper;
+import com.bosch.web.mapper.HoneyVerifyMapper;
 import com.bosch.web.service.HoneyProService;
 import com.bosch.web.service.HoneyVerifyService;
-import com.bosch.web.mapper.HoneyVerifyMapper;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -31,13 +27,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -56,60 +48,56 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
     private HoneyProService proService;
 
     @Value("${api.python-url}")
-    private static  String baseUrl;
-
-    private static final String valURL = baseUrl+"/validate";
-
-    private static final String iqaURL = baseUrl+"/iqa";
+    private String baseUrl;
 
 
     @Override
     public String getTotalResult(String algoResult, String textureResult) {
         //纹理真  算法真
-        if (MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOSUCCESS.equals(algoResult) ){
+        if (MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOSUCCESS.equals(algoResult)) {
             return MsgConstants.TRUE;
         }
         //纹理真  算法假
-        if (MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOFAIL.equals(algoResult) ){
+        if (MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOFAIL.equals(algoResult)) {
             return MsgConstants.TRUE;
         }
         //纹理假  算法真
-        if (!MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOSUCCESS.equals(algoResult) ){
+        if (!MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOSUCCESS.equals(algoResult)) {
             return MsgConstants.MANUAL;
         }
         //纹理假  算法假
-        if (!MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOFAIL.equals(algoResult) ){
+        if (!MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOFAIL.equals(algoResult)) {
             return MsgConstants.TRUE;
         }
         // 纹理假  算法假(时间久)
-        if (!MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOTIMEFAIL.equals(algoResult) ){
+        if (!MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOTIMEFAIL.equals(algoResult)) {
             return MsgConstants.MANUAL;
         }
         return null;
     }
 
-    public HoneyVerifyVO getValidate(String imagePath , String type){
-        HoneyVerifyVO vo=new HoneyVerifyVO();
+    public HoneyVerifyVO getValidate(String imagePath, String type) {
+        HoneyVerifyVO vo = new HoneyVerifyVO();
 
 
         ApiResponse apiResponse = validateImage(imagePath, type);
 
-        if (apiResponse==null){
+        if (apiResponse == null) {
             vo.setResult("算法api请求失败");
             vo.setMsg(MsgConstants.IQAFAILED);
-        }else {
+        } else {
             //假
-            if("0".equals(apiResponse.getCode())){
+            if ("0".equals(apiResponse.getCode())) {
                 vo.setResult(MsgConstants.FAKE);
                 vo.setMsg("纹理识别为假");
             }
             //真
-            else if("1".equals(apiResponse.getCode())){
+            else if ("1".equals(apiResponse.getCode())) {
                 vo.setResult(MsgConstants.TRUE);
                 vo.setMsg("纹理识别为真");
             }
             //未过IQA
-            if("2".equals(apiResponse.getCode())){
+            if ("2".equals(apiResponse.getCode())) {
                 vo.setResult(MsgConstants.IQAFAILED);
                 vo.setMsg(apiResponse.getMessage());
             }
@@ -119,12 +107,12 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
         return vo;
     }
 
-    public  ApiResponse validateImage(String imagePath ,String type) {
-        String URL="";
-        if ("0".equals(type)){
-            URL= iqaURL;
-        }else {
-            URL= valURL;
+    public ApiResponse validateImage(String imagePath, String type) {
+        String URL = "";
+        if ("0".equals(type)) {
+            URL = baseUrl + "/iqa";
+        } else {
+            URL = baseUrl + "/validate";
         }
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -147,7 +135,7 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
             // 将响应的 JSON 字符串转换为 ApiResponse 对象
             return objectMapper.readValue(response.getBody(), ApiResponse.class);
         } catch (Exception e) {
-            log.error("请求算法接口异常 :"+e.getMessage());
+            log.error("请求算法接口异常 :" + e.getMessage());
             return null;
         }
 
@@ -205,7 +193,7 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
         vo.setMsg(MsgConstants.ALOSUCCESSTEXT);
         //特殊：时间过久
         List<HoneyPro> proList = proService.getToken(dto.getToken());
-        if(CollectionUtils.isNotEmpty(proList)){
+        if (CollectionUtils.isNotEmpty(proList)) {
             HoneyPro honeyPro = proList.get(0);// 获取今天的日期
             Date createTime = honeyPro.getCreateTime();
             LocalDate today = LocalDate.now();
@@ -216,7 +204,7 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
             // 计算两个日期之间的差距
             Period period = Period.between(creationDate, today);
             // 判断是否超过一年
-            if (period.getYears() >= 1){
+            if (period.getYears() >= 1) {
                 vo.setResult(MsgConstants.ALOTIMEFAIL);
                 vo.setMsg(MsgConstants.OVERONEYEAR);
                 return vo;
@@ -303,6 +291,7 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
     public List<HoneyVerifyResultVO> getDash2(HoneyVerifyDTO dto) {
         return mapper.getDash2(dto);
     }
+
     private static String formatPosition(String position) {
         String[] coords = position.split(",");
         double lat = Double.parseDouble(coords[0]);
@@ -317,45 +306,98 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
 
     @Override
     public List<HoneyDashVO> getMonthlyStats(List<HoneyVerifyResultVO> dash) {
-        // 按月份分组
-        Map<String, List<HoneyVerifyResultVO>> groupedByMonth = dash.stream()
-                .collect(Collectors.groupingBy(vo -> {
-                    // 将 Date 转换为 LocalDateTime
+
+        // 当前年份
+        int currentYear = YearMonth.now().getYear();
+
+        // 过滤出当前年份的数据
+        List<HoneyVerifyResultVO> filteredDash = dash.stream()
+                .filter(vo -> {
                     LocalDateTime localDateTime = vo.getCreateTime().toInstant()
                             .atZone(ZoneId.systemDefault()).toLocalDateTime();
-                    // 按照 yyyy-MM 格式化
-                    return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM"));
-                }));
+                    return localDateTime.getYear() == currentYear;
+                })
+                .collect(Collectors.toList());
 
-        // 遍历分组结果，统计每个月的数量
+        // 初始化包含所有12个月份的空统计表
         List<HoneyDashVO> result = new ArrayList<>();
-        for (Map.Entry<String, List<HoneyVerifyResultVO>> entry : groupedByMonth.entrySet()) {
-            String month = entry.getKey();
-            List<HoneyVerifyResultVO> monthlyResults = entry.getValue();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        YearMonth currentYearMonth = YearMonth.now();
+        for (int i = 1; i <= 12; i++) {
+            int year = currentYearMonth.getYear();
+            //String formattedMonth = month.format(formatter);
 
-            // 统计 totalResults 的数量
-            long trueCount = monthlyResults.stream().filter(vo -> "true".equalsIgnoreCase(vo.getTotalResults())).count();
-            long fakeCount = monthlyResults.stream().filter(vo -> "Fake".equalsIgnoreCase(vo.getTotalResults())).count();
-            long totalCount = monthlyResults.size();
-
-            // 构建 HoneyDashVO
             HoneyDashVO honeyDashVO = new HoneyDashVO();
-            //honeyDashVO.setDate(Integer.parseInt(month.replace("-", ""))); // 将 yyyy-MM 格式转为 yyyyMM 整数
-            honeyDashVO.setDate(month);
-            honeyDashVO.setTrueNum((int) trueCount);
-            honeyDashVO.setFakeNum((int) fakeCount);
-            honeyDashVO.setTotal((int) totalCount);
+            if (i<10){
+                honeyDashVO.setDate(String.valueOf(year)+"-0"+i);
+            }else {
+                honeyDashVO.setDate(String.valueOf(year)+"-"+i);
+            }
+
+            honeyDashVO.setTrueNum(0);
+            honeyDashVO.setFakeNum(0);
+            honeyDashVO.setTotal(0);
 
             result.add(honeyDashVO);
         }
 
+        // 按月份分组
+        Map<String, List<HoneyVerifyResultVO>> groupedByMonth = filteredDash.stream()
+                .collect(Collectors.groupingBy(vo -> {
+        // 将 Date 转换为 LocalDateTime
+                    LocalDateTime localDateTime = vo.getCreateTime().toInstant()
+                            .atZone(ZoneId.systemDefault()).toLocalDateTime();
+        // 按照 yyyy-MM 格式化
+                    return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+                }));
+
+        // 遍历分组结果，更新对应月份的数据
+        for (Map.Entry<String, List<HoneyVerifyResultVO>> entry : groupedByMonth.entrySet()) {
+            String month = entry.getKey();
+            List<HoneyVerifyResultVO> monthlyResults = entry.getValue();
+
+             // 统计 totalResults 的数量
+            long trueCount = monthlyResults.stream().filter(vo -> "true".equalsIgnoreCase(vo.getTotalResults())).count();
+            long fakeCount = monthlyResults.stream().filter(vo -> "Fake".equalsIgnoreCase(vo.getTotalResults())).count();
+            long totalCount = monthlyResults.size();
+
+            // 查找并更新结果中的相应月份
+            for (HoneyDashVO honeyDashVO : result) {
+                if (honeyDashVO.getDate().equals(month)) {
+                    honeyDashVO.setTrueNum((int) trueCount);
+                    honeyDashVO.setFakeNum((int) fakeCount);
+                    honeyDashVO.setTotal((int) totalCount);
+                    break;
+                }
+            }
+        }
+        // 使用 Collections.sort() 按日期从小到大排序
+        Collections.sort(result, new Comparator<HoneyDashVO>() {
+            @Override
+            public int compare(HoneyDashVO o1, HoneyDashVO o2) {
+                YearMonth date1 = YearMonth.parse(o1.getDate(), formatter);
+                YearMonth date2 = YearMonth.parse(o2.getDate(), formatter);
+                return date1.compareTo(date2);
+            }
+        });
         return result;
     }
 
-    // 按季度分组统计
     public List<HoneyDashVO> getQuarterlyStats(List<HoneyVerifyResultVO> dash) {
+        // 获取当前年份
+        int currentYear = LocalDateTime.now().getYear();
+
+        // 过滤出当前年份的数据
+        List<HoneyVerifyResultVO> filteredDash = dash.stream()
+                .filter(vo -> {
+                    LocalDateTime localDateTime = vo.getCreateTime().toInstant()
+                            .atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    return localDateTime.getYear() == currentYear;
+                })
+                .collect(Collectors.toList());
+
         // 按季度分组
-        Map<String, List<HoneyVerifyResultVO>> groupedByQuarter = dash.stream()
+        Map<String, List<HoneyVerifyResultVO>> groupedByQuarter = filteredDash.stream()
                 .collect(Collectors.groupingBy(vo -> {
                     LocalDateTime localDateTime = vo.getCreateTime().toInstant()
                             .atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -364,26 +406,48 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
                     return localDateTime.getYear() + "-Q" + quarter;
                 }));
 
-        // 遍历分组结果，统计每个季度的数量
+        // 初始化包含所有4个季度的空统计表
         List<HoneyDashVO> result = new ArrayList<>();
+        for (int quarter = 1; quarter <= 4; quarter++) {
+            String quarterKey = currentYear + "-Q" + quarter;
+
+            HoneyDashVO honeyDashVO = new HoneyDashVO();
+            honeyDashVO.setDate(quarterKey); // 格式化为 "yyyy-Qx" 的字符串
+            honeyDashVO.setTrueNum(0);
+            honeyDashVO.setFakeNum(0);
+            honeyDashVO.setTotal(0);
+
+            result.add(honeyDashVO);
+        }
+
+        // 遍历分组结果，更新对应季度的数据
         for (Map.Entry<String, List<HoneyVerifyResultVO>> entry : groupedByQuarter.entrySet()) {
             String quarter = entry.getKey();
             List<HoneyVerifyResultVO> quarterlyResults = entry.getValue();
 
-            // 统计 totalResults 的数量
+        // 统计 totalResults 的数量
             long trueCount = quarterlyResults.stream().filter(vo -> "true".equalsIgnoreCase(vo.getTotalResults())).count();
             long fakeCount = quarterlyResults.stream().filter(vo -> "Fake".equalsIgnoreCase(vo.getTotalResults())).count();
             long totalCount = quarterlyResults.size();
 
-            // 构建 HoneyDashVO
-            HoneyDashVO honeyDashVO = new HoneyDashVO();
-            honeyDashVO.setDate(quarter); // 格式化为 "yyyyQx" 的字符串
-            honeyDashVO.setTrueNum((int) trueCount);
-            honeyDashVO.setFakeNum((int) fakeCount);
-            honeyDashVO.setTotal((int) totalCount);
-
-            result.add(honeyDashVO);
+        // 查找并更新结果中的相应季度
+            for (HoneyDashVO honeyDashVO : result) {
+                if (honeyDashVO.getDate().equals(quarter)) {
+                    honeyDashVO.setTrueNum((int) trueCount);
+                    honeyDashVO.setFakeNum((int) fakeCount);
+                    honeyDashVO.setTotal((int) totalCount);
+                    break;
+                }
+            }
         }
+
+        // 按季度排序
+        result.sort(new Comparator<HoneyDashVO>() {
+            @Override
+            public int compare(HoneyDashVO o1, HoneyDashVO o2) {
+                return o1.getDate().compareTo(o2.getDate());
+            }
+        });
 
         return result;
     }

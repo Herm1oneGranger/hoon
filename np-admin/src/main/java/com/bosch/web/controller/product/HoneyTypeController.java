@@ -5,23 +5,15 @@ import com.bosch.common.core.controller.BaseController;
 import com.bosch.common.core.domain.AjaxResult;
 import com.bosch.common.core.page.TableDataInfo;
 import com.bosch.common.enums.BusinessType;
-import com.bosch.common.utils.BeanConverUtil;
-import com.bosch.common.utils.poi.ExcelUtil;
 import com.bosch.web.domain.HoneyType;
-import com.bosch.web.domain.PImages;
-import com.bosch.web.domain.dto.*;
-import com.bosch.web.domain.vo.VerifyRecordVO;
-import com.bosch.web.service.*;
+import com.bosch.web.domain.dto.HoneyTypeDTO;
+import com.bosch.web.service.HoneyTypeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import net.bytebuddy.description.field.FieldList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -59,7 +51,10 @@ public class HoneyTypeController extends BaseController {
     public AjaxResult add(@RequestBody HoneyTypeDTO dto) {
 
         //校验重复
-
+        String valid = honeyTypeService.valid(dto);
+        if (valid!=null){
+            return  error(valid);
+        }
         //插入
 
         int i = honeyTypeService.insertHoney( dto);
@@ -77,6 +72,12 @@ public class HoneyTypeController extends BaseController {
     public AjaxResult update(@RequestBody HoneyTypeDTO dto ) {
 
 
+        //校验
+        String valid = honeyTypeService.valid(dto);
+        if (valid!=null){
+            return  error(valid);
+        }
+
         int i = honeyTypeService.updateHoney(dto);
 
         return toAjax(i);
@@ -88,6 +89,8 @@ public class HoneyTypeController extends BaseController {
 
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Integer[] ids) {
+
+
         return toAjax(honeyTypeService.deleteAreaByIds(ids));
     }
 }

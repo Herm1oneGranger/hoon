@@ -1,15 +1,8 @@
 package com.bosch.web.domain.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.bosch.common.core.domain.BaseEntity;
 import com.bosch.common.core.page.PageDomain;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -25,6 +18,21 @@ public class HoneyVerifyDTO extends PageDomain {
 
     @ApiModelProperty(value = "dateType")
     private String dateType;
+
+    @ApiModelProperty(value = "material")
+    private String material;
+
+    @ApiModelProperty(value = "so")
+    private String so;
+
+    @ApiModelProperty(value = "orderNo")
+    private String orderNo;
+
+    @ApiModelProperty(value = "orderQua")
+    private String orderQua;
+
+    @ApiModelProperty(value = "token")
+    private String token;
 
     @ApiModelProperty(value = "materialCode")
     private String materialCode;
@@ -114,8 +122,6 @@ public class HoneyVerifyDTO extends PageDomain {
     @ApiModelProperty(value = "city")
     private String city;
 
-    @ApiModelProperty(value = "token")
-    private String token;
 
     @ApiModelProperty(value = "pic")
     private String pic;
