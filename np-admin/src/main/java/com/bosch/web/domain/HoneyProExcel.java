@@ -21,14 +21,14 @@ public class HoneyProExcel {
     private String material;
 
     /**
-     * 物料类别
+     * 产品类别
      */
-    @Excel(name = "物料类型")
+    @Excel(name = "产品类别(名称)")
     @TableField(value = "material_code")
     private String materialCode;
 
     /**
-     * standard order
+     * Sales Order
      */
     @Excel(name = "订单号 (Sales Order)")
     @TableField(value = "so")
@@ -55,12 +55,6 @@ public class HoneyProExcel {
     @TableField(value = "order_no")
     private String orderNo;
 
-    /**
-     * 
-     */
-    @Excel(name = "un")
-    @TableField(value = "un")
-    private String un;
 
     /**
      * 
@@ -69,38 +63,18 @@ public class HoneyProExcel {
     @TableField(value = "des")
     private String des;
 
-    /**
-     * 
-     */
-    @Excel(name = "sold_to")
-    @TableField(value = "sold_to")
-    private String soldTo;
 
-    @Excel(name = "model")
+    @Excel(name = "型号")
     @TableField(value = "model")
     private String model;
 
-    @Excel(name = "specification")
+    @Excel(name = "规格")
     @TableField(value = "specification")
     private String specification;
 
-    @Excel(name = "power")
+    @Excel(name = "功率")
     @TableField(value = "power")
     private String power;
-
-    /**
-     * 
-     */
-    @Excel(name = "ship_to")
-    @TableField(value = "ship_to")
-    private String shipTo;
-
-    /**
-     * 
-     */
-    @Excel(name = "po_no")
-    @TableField(value = "po_no")
-    private String poNo;
 
 //    @Excel(name = "token")
 //    @TableField(value = "token")

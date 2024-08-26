@@ -4,12 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.util.Date;
-
 import com.bosch.common.annotation.Excel;
 import com.bosch.common.core.domain.BaseEntity;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -35,7 +31,7 @@ public class HoneyPro extends BaseEntity {
     /**
      * 物料类别
      */
-    @Excel(name = "物料类型")
+    @Excel(name = "产品类别(名称)")
     @TableField(value = "material_code")
     private String materialCode;
 
@@ -88,15 +84,15 @@ public class HoneyPro extends BaseEntity {
     @TableField(value = "sold_to")
     private String soldTo;
 
-    @Excel(name = "model")
+    @Excel(name = "型号")
     @TableField(value = "model")
     private String model;
 
-    @Excel(name = "specification")
+    @Excel(name = "规格")
     @TableField(value = "specification")
     private String specification;
 
-    @Excel(name = "power")
+    @Excel(name = "功率")
     @TableField(value = "power")
     private String power;
 
