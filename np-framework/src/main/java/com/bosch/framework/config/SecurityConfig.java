@@ -128,7 +128,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/honey/verify/verify1").permitAll()
                 .antMatchers("/honey/verify/getOpenId").permitAll()
                 .antMatchers("/ssoLogin").permitAll()
-
+                .antMatchers("/ssoLogin1").permitAll()
                 .antMatchers("/product/verify/getInfo/*").permitAll()
                 .antMatchers("/product/verify/getProductPicture/*").permitAll()
                 .antMatchers("/product/verify/getOpenId").permitAll()

@@ -21,6 +21,9 @@ import com.bosch.framework.manager.factory.AsyncFactory;
 import com.bosch.framework.security.context.AuthenticationContextHolder;
 import com.bosch.system.service.ISysConfigService;
 import com.bosch.system.service.ISysUserService;
+import com.bosch.system.service.impl.SysUserServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -43,6 +46,8 @@ import java.util.Map;
 public class SysLoginService
 {
     @Autowired
+    private SysPermissionService permissionService;
+    @Autowired
     private TokenService tokenService;
 
     @Autowired
@@ -60,6 +65,7 @@ public class SysLoginService
     @Autowired
     private ISysConfigService configService;
 
+    private static final Logger log = LoggerFactory.getLogger(SysUserServiceImpl.class);
     /**
      * 登录验证
      * 
@@ -114,12 +120,43 @@ public class SysLoginService
      * @param code
      */
     public void ssoLogin(String code, HttpServletResponse response) throws IOException {
+//        try {
+//            RestTemplate restTemplate =new RestTemplate();
+//            String authHeader = "Basic " + new String(Base64Utils.encode((adfsConfig.getClientId() + ":" + adfsConfig.getClientSecret()).getBytes()));
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//            headers.set("Authorization", authHeader);
+//
+//            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+//            params.add("grant_type", "authorization_code");
+//            params.add("code", code);
+//            params.add("redirect_uri", "https://setsantifake.honeywell.com.cn/ssoLogin");
+//
+//            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+//            ResponseEntity<String> result = restTemplate.postForEntity("https://authn.honeywell.com/as/token.oauth2", request, String.class);
+//
+//            if (result.getStatusCode() == HttpStatus.OK) {
+//                // TODO: 解析响应体以获取 access_token
+//                String responseBody = result.getBody();
+//                // 这里需要根据实际响应体格式解析 access_token
+//
+//            } else {
+//                // 处理错误情况
+//                System.out.println("Error: " + result.getStatusCode());
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+
         System.out.println("sso code: "+code);
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("client_id", adfsConfig.getClientId());
         paramMap.put("client_secret", adfsConfig.getClientSecret());
         paramMap.put("grant_type", adfsConfig.getGrantTypeAuthorizationCode());
         paramMap.put("code", code);
+        paramMap.put("redirect_uri", "https://setsantifake.honeywell.com.cn/api/ssoLogin");
+        System.out.println(paramMap);
         String responseStr = HttpUtil.post(adfsConfig.getTokenEndpoint(), paramMap);
         System.out.println(responseStr);
         JSONObject jsonObject = JSONObject.parseObject(responseStr);
@@ -127,14 +164,36 @@ public class SysLoginService
             String accessToken = jsonObject.get("access_token").toString();
             Map<String, String > heads = new HashMap<>(10);
             // 使用json发送请求，下面的是必须的
-            heads.put("Authorization", accessToken);
+            heads.put("Authorization","Bearer "+ accessToken);
             String userInoResStr = HttpRequest.get(adfsConfig.getUserInfoUrl())
                     .headerMap(heads, false)
                     .timeout(20000) //有个坑超过21秒会导致失效，注意
                     .execute().body();
             JSONObject userInoResObject = JSONObject.parseObject(userInoResStr);
-            if (userInoResObject.containsKey("userPrincipalName")) {
-                String ntAccount = userInoResObject.get("userPrincipalName").toString().split("@")[0];
+            if (userInoResObject.containsKey("sub")) {
+                String ntAccount = userInoResObject.get("sub").toString();
+                String ming = userInoResObject.get("given_name").toString();
+                String xing = userInoResObject.get("family_name").toString();
+                String email = userInoResObject.get("email").toString();
+
+                SysUser user = userService.selectUserByUserName(ntAccount);
+                if (user != null) {
+                    LoginUser loginUser = new LoginUser(user.getUserId(), user.getDeptId(), user, permissionService.getMenuPermission(user));
+                    recordLoginInfo(loginUser.getUserId());
+                    // 生成token
+
+                    String token = tokenService.createToken(loginUser);
+                    log.info("SsoLogin:" + "token=" + token);
+                    response.sendRedirect("https://setsantifake.honeywell.com.cn/ssoLogin" + "?token=" + token);
+
+//                    response.sendRedirect(loginUrl + "?token=" + token);
+                } else {
+//                    log.error("Can not find user in system！\n" + jsonObject.get("error_description"));
+//                    response.sendRedirect(noRoleUrl);
+                    throw new ServiceException("账号："+ntAccount+"不在库中，请联系管理员添加");
+                }
+
+//                String ntAccount = userInoResObject.get("sub").toString().split("@")[0];
 //                SysUser user = userService.selectUserByUserName(ntAccount);
 //                if (user != null) {
 ////                    LoginUser loginUser = new LoginUser(user.getUserId(), user.getDeptId(), user, permissionService.getMenuPermission(user));
@@ -148,14 +207,20 @@ public class SysLoginService
 //                    response.sendRedirect(noRoleUrl);
 //                }
             } else {
-//                log.error("sso获取userInfo失败！\n" + jsonObject.get("error_description"));
-                response.sendRedirect("noRoleUrl");
-//                throw new ServiceException("Failed to obtain user info!");
+                log.error("sso获取userInfo失败！\n" + jsonObject.get("error_description"));
+//                response.sendRedirect("noRoleUrl");
+                throw new ServiceException("Failed to obtain user info!");
             }
-        } else {
-//            log.error("sso登录失败！\n" + jsonObject.get("error_description"));
-            response.sendRedirect("noRoleUrl");
-//            throw new ServiceException("Failed to obtain Microsoft AD token!");
+        }
+        else if (jsonObject.containsKey("error"))
+        {
+            log.error("sso登录失败！\n" + jsonObject.get("error").toString()+":"+jsonObject.get("error_description").toString());
+            throw new ServiceException(jsonObject.get("error_description").toString());
+        }
+        else {
+            log.error("sso登录失败！\n" + jsonObject.get("error_description"));
+            //response.sendRedirect("noRoleUrl");
+            throw new ServiceException("Failed to obtain Microsoft AD token!");
         }
     }
 

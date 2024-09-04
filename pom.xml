@@ -260,6 +260,7 @@
                 <datasource.user>root</datasource.user>
                 <python.url>http://143.64.233.91:8090</python.url>
                 <path.url>/home/soroot/dc/nameplate/algo/images</path.url>
+                <feedback.url>http://143.64.233.91:8082</feedback.url>
                 <datasource.password>123456</datasource.password>
                 <redis.host>143.64.233.91</redis.host>
                 <redis.password>123456</redis.password>
@@ -271,7 +272,8 @@
                 <profiles.active>/home/dc/ico_img/</profiles.active>
                 <datasource.host>10.113.236.148:3306</datasource.host>
                 <python.url>http://localhost:8090</python.url>
-                <path.url> </path.url>
+                <path.url>/home/h581177a</path.url>
+                <feedback.url>https://setsantifake.honeywell.com.cn</feedback.url>
                 <datasource.user>rootuser</datasource.user>
                 <datasource.password>password</datasource.password>
                 <redis.host>127.0.0.1</redis.host>

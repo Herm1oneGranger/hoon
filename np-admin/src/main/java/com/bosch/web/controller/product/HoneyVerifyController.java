@@ -32,7 +32,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,6 +61,10 @@ public class HoneyVerifyController extends BaseController {
 
     @Value("${api.path-url}")
     private    String baseUrl;
+
+    @Value("${api.feedback-url}")
+    private    String feedbackUrl;
+
     @Autowired
     private HoneyVerifyService service;
 
@@ -102,7 +105,7 @@ public class HoneyVerifyController extends BaseController {
      *
      */
     @ApiOperation("新增校验结果")
-    @PreAuthorize("@ss.hasPermi('product:add')")
+    //@PreAuthorize("@ss.hasPermi('product:add')")
     @Log(title = logTitle, businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult add(@RequestBody HoneyVerifyDTO dto) {
@@ -297,7 +300,7 @@ public class HoneyVerifyController extends BaseController {
             String originalFilename = file.getOriginalFilename();
             String fileName = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
             // 指定保存路径
-            String filePath =baseUrl+ "/verify/"+fileName+originalFilename;
+            String filePath =baseUrl+ "/feedback/"+fileName+originalFilename;
             // 检查并创建文件夹
             File fileP = new File(filePath);
             File dir = fileP.getParentFile();
@@ -307,7 +310,7 @@ public class HoneyVerifyController extends BaseController {
             // 文件保存路径
             String savePath = filePath ;
             //文件展示路径
-            String showPath = "/images/"+fileName+originalFilename;
+            String showPath = feedbackUrl+"/images/"+fileName+originalFilename;
             // 保存文件
             file.transferTo(new File(savePath));
             // 返回图片路径

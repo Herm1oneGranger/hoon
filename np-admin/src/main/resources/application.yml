@@ -188,3 +188,4 @@ depts: 测试部门,工厂部门
 api:
   python-url: @python.url@
   path-url: @path.url@
+  feedback-url: @feedback.url@

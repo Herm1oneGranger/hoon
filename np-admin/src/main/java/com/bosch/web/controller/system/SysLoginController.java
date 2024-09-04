@@ -54,14 +54,24 @@ public class SysLoginController
     /**
      * 单点登录 SSO
      */
-    @GetMapping("/ssoLogin")
+    @GetMapping ("/ssoLogin")
     public void ssoLogin(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
         System.out.println("sso登录开始 code :"+code);
+        String getCode="https://authn.honeywell.com/as/authorization.oauth2?client_id=Client_bvva92fcse2u&scope=email+openid+profile&response_type=code&redirect_uri=https://setsantifake.honeywell.com.cn/ssoLogin";
         loginService.ssoLogin(code, response);
-//        response.sendRedirect(loginUrl + "?token=" + token);
-//        return "redirect:" + loginUrl + "?token=" + token;
+        //String token = loginService.ssoLogin(code, response);
+//        AjaxResult ajax = AjaxResult.success();
+//
+//
+//        ajax.put(Constants.TOKEN, token);
+//        return ajax;
     }
-
+    @GetMapping ("/ssoLogin1")
+    public void ssoLogin1(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
+        System.out.println("sso登录开始 code :"+code);
+        response.sendRedirect("https://www.baidu.com");;
+        //response.sendRedirect("https://authn.honeywell.com/as/authorization.oauth2?client_id=Client_bvva92fcse2u&scope=email+openid+profile&response_type=code&redirect_uri=https://setsantifake.honeywell.com.cn/api/ssoLogin");;
+    }
     /**
      * 获取用户信息
      * 

@@ -11,7 +11,6 @@ import com.bosch.web.service.HoneyTypeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,7 +44,7 @@ public class HoneyTypeController extends BaseController {
      * 新增产品
      */
     @ApiOperation("新增产品信息")
-    @PreAuthorize("@ss.hasPermi('product:add')")
+    //@PreAuthorize("@ss.hasPermi('product:add')")
     @Log(title = logTitle, businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult add(@RequestBody HoneyTypeDTO dto) {

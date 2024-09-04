@@ -1,9 +1,5 @@
 package com.bosch.web.domain.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.bosch.common.annotation.Excel;
 import com.bosch.common.core.domain.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
@@ -100,7 +96,7 @@ public class HoneyVerifyResultVO extends BaseEntity {
     @ApiModelProperty(value = "user_name")
     private String userName;
 
-    @Excel(name = "手机号码")
+    //@Excel(name = "手机号码")
     @ApiModelProperty(value = "telephone")
     private String telephone;
 

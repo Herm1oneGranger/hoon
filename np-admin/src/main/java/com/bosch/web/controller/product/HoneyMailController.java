@@ -7,15 +7,10 @@ import com.bosch.common.core.page.TableDataInfo;
 import com.bosch.common.enums.BusinessType;
 import com.bosch.web.domain.HoneyMail;
 import com.bosch.web.domain.dto.HoneyMailDTO;
-import com.bosch.web.domain.dto.HoneyVerifyDTO;
-import com.bosch.web.domain.vo.HoneyVerifyResultVO;
-import com.bosch.web.domain.vo.HoneyVerifyVO;
 import com.bosch.web.service.HoneyMailService;
-import com.bosch.web.service.HoneyVerifyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,7 +44,7 @@ public class HoneyMailController extends BaseController {
      * 新增产品
      */
     @ApiOperation("新增")
-    @PreAuthorize("@ss.hasPermi('mail:add')")
+    //@PreAuthorize("@ss.hasPermi('mail:add')")
     @Log(title = logTitle, businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult add(@RequestBody HoneyMailDTO dto) {

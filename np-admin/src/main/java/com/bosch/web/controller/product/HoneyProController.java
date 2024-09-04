@@ -14,7 +14,6 @@ import com.bosch.web.service.HoneyProService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -93,7 +92,7 @@ public class HoneyProController extends BaseController {
      * 新增产品
      */
     @ApiOperation("新增产品信息")
-    @PreAuthorize("@ss.hasPermi('product:add')")
+    //@PreAuthorize("@ss.hasPermi('product:add')")
     @Log(title = logTitle, businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult add( @RequestBody HoneyProDTO dto) {
@@ -138,7 +137,7 @@ public class HoneyProController extends BaseController {
 
     @Log(title = logTitle, businessType = BusinessType.UPDATE)
     @PostMapping("/updateStatus")
-    @PreAuthorize("@ss.hasRole('admin')")
+    //@PreAuthorize("@ss.hasRole('admin')")
     public AjaxResult updateStatus(@RequestBody HoneyProDTO dto ) {
 
         int i = honeyProService.updateStatus(dto);
