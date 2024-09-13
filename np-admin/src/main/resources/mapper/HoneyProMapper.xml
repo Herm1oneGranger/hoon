@@ -69,6 +69,15 @@
         <if test="token != null and token != ''">and token  = #{token}</if>
 
     </select>
+    <select id="getAToken" parameterType="com.bosch.web.domain.dto.HoneyProDTO" resultType="com.bosch.web.domain.HoneyPro">
+        select
+        <include refid="Base_Column_List"/>
+        from honey_pro
+        where 1=1 and delete_flag=0 and status= 1
+
+        <if test="token != null and token != ''">and token  = #{token}</if>
+
+    </select>
     <delete id="deleteAreaByIds" parameterType="String">
         UPDATE honey_pro SET delete_flag=1 WHERE id IN
         <foreach item="id" collection="array" open="(" separator="," close=")">

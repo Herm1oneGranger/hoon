@@ -202,6 +202,88 @@ public class HoneyVerifyController extends BaseController {
     @PostMapping("/verify1")
     public AjaxResult verify1(HttpServletRequest request ,@RequestBody PVerifyDTO dto) {
 
+        String jsonString =   "appid:"+dto.getAppId()+" position:"+dto.getPosition();
+        logger.info("开始校验,参数:"+jsonString);
+        System.out.println("开始校验,参数:"+jsonString);
+        HoneyVerifyVO vo = new HoneyVerifyVO();
+
+        // 示例 Base64 字符串
+        String base64Str = dto.getImgBase();
+        // 去掉头部信息
+        base64Str = base64Str.substring(base64Str.indexOf(",") + 1);
+        // 生成文件名
+        String fileName = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".jpg";
+        // 文件保存路径
+        String filePath = baseUrl+"/verify/" + fileName;
+        String showPath = "/images/"+fileName;
+        // 检查并创建文件夹
+        File file = new File(filePath);
+        File dir = file.getParentFile();
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        logger.info("文件保存完成："+fileName);
+        // 判断token在不在库里
+        HoneyVerifyVO checkToken = service.checkToken(dto);
+        if (StringUtils.isNotEmpty(checkToken.getResult())) {
+            logger.info("checkToken:"+dto.getToken() +" 不在库中");
+            return success(checkToken);
+        }
+
+        // 解码Base64字符串
+        byte[] imageBytes = Base64.getDecoder().decode(base64Str);
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(imageBytes);
+
+            //iqa校验包含在算法中
+            HoneyVerifyDTO honeyVerifyDTO = BeanConverUtil.conver(dto, HoneyVerifyDTO.class);
+            honeyVerifyDTO.setPic(showPath);
+            //算法校验
+            HoneyVerifyVO honeyVerifyVO = service.algoVerify(honeyVerifyDTO);
+            honeyVerifyDTO.setAlgoResults(honeyVerifyVO.getResult());
+
+            //纹理校验
+            HoneyVerifyVO validate = service.getValidate(filePath, "1");
+            if(MsgConstants.Retry.equals(validate.getResult())){
+                return success(validate);
+            }
+            honeyVerifyDTO.setTextureResults(validate.getResult());
+
+            //合并校验结果
+            String totalResult = service.getTotalResult(dto, honeyVerifyDTO.getAlgoResults(), honeyVerifyDTO.getTextureResults());
+            if(totalResult==null){
+                return error("合并纹理校验结果与用户算法校验结果异常,请重试");
+            }
+            honeyVerifyDTO.setTotalResults(totalResult);
+            //校验不记录
+            LoginUser loginUser = tokenService.getLoginUser(request);
+            HoneyVerify honeyVerify=new HoneyVerify();
+            if (null==loginUser){
+                honeyVerify = service.insertHoneyGetId(honeyVerifyDTO);
+                vo.setReocrdId(honeyVerify.getId().intValue());
+                logger.info("扫码校验：", JSON.toJSONString(vo));
+            }
+
+            vo.setResult(totalResult);
+            logger.info("激活校验：", JSON.toJSONString(vo));
+            return success(vo);
+
+        } catch (IOException e) {
+            return error(e.getMessage());
+        }
+
+    }
+
+    @ApiOperation("标签激活")
+//    @Log(title = "标签算法校验verify1", businessType = BusinessType.INSERT)
+    @PostMapping("/activate")
+    public AjaxResult activate(HttpServletRequest request ,@RequestBody PVerifyDTO dto) {
+
+
+        String jsonString = "appid:"+dto.getAppId()+" position:"+dto.getPosition();
+        logger.info("开始标签激活,参数:"+jsonString);
+        System.out.println("开始标签激活,参数:"+jsonString);
+
         HoneyVerifyVO vo = new HoneyVerifyVO();
 
         // 示例 Base64 字符串
@@ -235,34 +317,28 @@ public class HoneyVerifyController extends BaseController {
             //iqa校验包含在算法中
             HoneyVerifyDTO honeyVerifyDTO = BeanConverUtil.conver(dto, HoneyVerifyDTO.class);
             honeyVerifyDTO.setPic(showPath);
-            //算法校验
-            HoneyVerifyVO honeyVerifyVO = service.algoVerify(honeyVerifyDTO);
-            honeyVerifyDTO.setAlgoResults(honeyVerifyVO.getResult());
+//            //算法校验
+//            HoneyVerifyVO honeyVerifyVO = service.algoVerify(honeyVerifyDTO);
+//            honeyVerifyDTO.setAlgoResults(honeyVerifyVO.getResult());
 
             //纹理校验
             HoneyVerifyVO validate = service.getValidate(filePath, "1");
-            if(MsgConstants.IQAFAILED.equals(validate.getResult())){
+            if(MsgConstants.Retry.equals(validate.getResult())){
                 return success(validate);
             }
             honeyVerifyDTO.setTextureResults(validate.getResult());
 
-            //合并校验结果
-            String totalResult = service.getTotalResult(honeyVerifyDTO.getAlgoResults(), honeyVerifyDTO.getTextureResults());
-            if(totalResult==null){
-                return error("合并纹理校验结果与用户算法校验结果异常");
-            }
-            honeyVerifyDTO.setTotalResults(totalResult);
+//            //合并校验结果
+          String totalResult = service.getTotalResult(dto, honeyVerifyDTO.getAlgoResults(), honeyVerifyDTO.getTextureResults());
+//            if(totalResult==null){
+//                return error("合并纹理校验结果与用户算法校验结果异常,请重试");
+//            }
+//            honeyVerifyDTO.setTotalResults(totalResult);
             //校验不记录
-            LoginUser loginUser = tokenService.getLoginUser(request);
-            HoneyVerify honeyVerify=new HoneyVerify();
-            if (null==loginUser){
-                honeyVerify = service.insertHoneyGetId(honeyVerifyDTO);
-                vo.setReocrdId(honeyVerify.getId().intValue());
-                logger.info("扫码校验：", JSON.toJSONString(vo));
-            }
 
-            logger.info("激活校验：", JSON.toJSONString(vo));
-            return success(vo);
+            vo.setResult(validate.getResult());
+            logger.info("激活校验完成：", JSON.toJSONString(vo));
+            return success(validate);
 
         } catch (IOException e) {
             return error(e.getMessage());
@@ -324,7 +400,7 @@ public class HoneyVerifyController extends BaseController {
     @ApiOperation("采图上传base64")
     @PostMapping("/upload64")
     public AjaxResult upload64(@RequestBody PicDTO dto) {
-
+        HoneyVerifyVO vo = new HoneyVerifyVO();
         // 示例 Base64 字符串
         String base64Str = dto.getImgBase();
         // 去掉头部信息
@@ -345,23 +421,23 @@ public class HoneyVerifyController extends BaseController {
         byte[] imageBytes = Base64.getDecoder().decode(base64Str);
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(imageBytes);
-            logger.info("采图完成：", filePath);
+            logger.info("采图完成："+filePath);
             //todo iqa
         } catch (IOException e) {
             return error(e.getMessage());
         }
-            logger.info("开始iqa：", filePath);
+            logger.info("开始iqa："+ filePath);
             //iqa校验
             ApiResponse apiResponse = service.validateImage(filePath, "0");
             if (apiResponse==null){
                 return error("调用iqa校验接口失败");
             }
             if (apiResponse!=null&&apiResponse.getCode()==0){
-//                vo.setMsg(apiResponse.getMessage());
-//                vo.setResult(MsgConstants.IQAFAILED);
-                return error(apiResponse.getMessage());
+                vo.setMsg(apiResponse.getMessage());
+                vo.setResult(MsgConstants.IQAFAILED);
+                return success(vo);
             }
-
+            logger.info("iqa完成："+filePath);
             return success();
 
 

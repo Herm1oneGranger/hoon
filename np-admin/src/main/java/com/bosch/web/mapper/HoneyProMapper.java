@@ -1,11 +1,8 @@
 package com.bosch.web.mapper;
 
-import com.bosch.web.domain.HoneyFeedback;
-import com.bosch.web.domain.HoneyPro;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.bosch.web.domain.HoneyType;
+import com.bosch.web.domain.HoneyPro;
 import com.bosch.web.domain.dto.HoneyProDTO;
-import com.bosch.web.domain.dto.HoneyTypeDTO;
 
 import java.util.List;
 
@@ -20,6 +17,7 @@ public interface HoneyProMapper extends BaseMapper<HoneyPro> {
     List<HoneyPro> getList(HoneyProDTO dto);
 
     List<HoneyPro> getToken(String token);
+    List<HoneyPro> getAToken(String token);
     int deleteAreaByIds(Integer[] ids);
 
     int updateStatus(HoneyPro honeyPro);

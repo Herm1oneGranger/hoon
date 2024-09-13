@@ -1,12 +1,15 @@
 package com.bosch.web.service.impl;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.common.utils.BeanConverUtil;
+import com.bosch.common.utils.StringUtils;
 import com.bosch.framework.web.service.UserDetailsServiceImpl;
 import com.bosch.web.constant.MsgConstants;
 import com.bosch.web.domain.HoneyPro;
 import com.bosch.web.domain.HoneyVerify;
+import com.bosch.web.domain.dto.HoneyMailDetailDTO;
 import com.bosch.web.domain.dto.HoneyVerifyDTO;
 import com.bosch.web.domain.dto.PVerifyDTO;
 import com.bosch.web.domain.vo.ApiResponse;
@@ -14,9 +17,11 @@ import com.bosch.web.domain.vo.HoneyDashVO;
 import com.bosch.web.domain.vo.HoneyVerifyResultVO;
 import com.bosch.web.domain.vo.HoneyVerifyVO;
 import com.bosch.web.mapper.HoneyVerifyMapper;
+import com.bosch.web.service.HoneyMailDetailService;
 import com.bosch.web.service.HoneyProService;
 import com.bosch.web.service.HoneyVerifyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,36 +46,57 @@ import java.util.stream.Collectors;
 public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, HoneyVerify>
         implements HoneyVerifyService {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private HoneyVerifyMapper mapper;
 
     @Autowired
     private HoneyProService proService;
 
+    @Autowired
+    private HoneyMailDetailService mailDetailService;
+
+
+
     @Value("${api.python-url}")
     private String baseUrl;
 
 
     @Override
-    public String getTotalResult(String algoResult, String textureResult) {
+    public String getTotalResult(PVerifyDTO dto,String algoResult, String textureResult) {
+        logger.info("合并纹理结果："+"algoResult:"+algoResult + " textureResult:"+textureResult);
+        HoneyMailDetailDTO mailDetailDTO =new HoneyMailDetailDTO();
+        mailDetailDTO.setMail("cherry.chen2@honeywell.com");
+        mailDetailDTO.setName("cherry");
+        mailDetailDTO.setTitle(dto.getToken());
+        String baseString ="token : "+dto.getToken()+" ";
         //纹理真  算法真
         if (MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOSUCCESS.equals(algoResult)) {
+
             return MsgConstants.TRUE;
         }
         //纹理真  算法假
         if (MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOFAIL.equals(algoResult)) {
+            mailDetailDTO.setContent(baseString +"纹理算法识别为真，逻辑算法识别为假。");
+            mailDetailService.insert(mailDetailDTO);
             return MsgConstants.TRUE;
         }
         //纹理假  算法真
-        if (!MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOSUCCESS.equals(algoResult)) {
+        if (MsgConstants.FAKE.equals(textureResult) && MsgConstants.ALOSUCCESS.equals(algoResult)) {
+            mailDetailDTO.setContent(baseString +"纹理算法识别为假，逻辑算法识别为真。");
+            mailDetailService.insert(mailDetailDTO);
             return MsgConstants.MANUAL;
         }
         //纹理假  算法假
-        if (!MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOFAIL.equals(algoResult)) {
-            return MsgConstants.TRUE;
+        if (MsgConstants.FAKE.equals(textureResult) && MsgConstants.ALOFAIL.equals(algoResult)) {
+            mailDetailDTO.setContent(baseString +"纹理算法识别为假，逻辑算法识别为假。");
+            mailDetailService.insert(mailDetailDTO);
+            return MsgConstants.FAKE;
         }
         // 纹理假  算法假(时间久)
-        if (!MsgConstants.TRUE.equals(textureResult) && MsgConstants.ALOTIMEFAIL.equals(algoResult)) {
+        if (MsgConstants.FAKE.equals(textureResult) && MsgConstants.ALOTIMEFAIL.equals(algoResult)) {
+            mailDetailDTO.setContent(baseString +"纹理算法识别为假，逻辑算法识别为假（产品时间过久）。");
+            mailDetailService.insert(mailDetailDTO);
             return MsgConstants.MANUAL;
         }
         return null;
@@ -83,22 +109,22 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
         ApiResponse apiResponse = validateImage(imagePath, type);
 
         if (apiResponse == null) {
-            vo.setResult("算法api请求失败");
-            vo.setMsg(MsgConstants.IQAFAILED);
+            vo.setResult(MsgConstants.Retry);
+            vo.setMsg("算法api请求失败");
         } else {
             //假
-            if ("0".equals(apiResponse.getCode())) {
+            if (apiResponse.getCode()==0) {
                 vo.setResult(MsgConstants.FAKE);
                 vo.setMsg("纹理识别为假");
             }
             //真
-            else if ("1".equals(apiResponse.getCode())) {
+            if (apiResponse.getCode()==1) {
                 vo.setResult(MsgConstants.TRUE);
                 vo.setMsg("纹理识别为真");
             }
             //未过IQA
-            if ("2".equals(apiResponse.getCode())) {
-                vo.setResult(MsgConstants.IQAFAILED);
+            if (apiResponse.getCode()==2) {
+                vo.setResult(MsgConstants.Retry);
                 vo.setMsg(apiResponse.getMessage());
             }
 
@@ -132,6 +158,8 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
 
         // 返回响应结果
         try {
+            logger.info("纹理识别返回结果:"+ JSON.toJSONString(response.getBody()));
+            System.out.println("纹理识别返回结果:"+JSON.toJSONString(response.getBody()));
             // 将响应的 JSON 字符串转换为 ApiResponse 对象
             return objectMapper.readValue(response.getBody(), ApiResponse.class);
         } catch (Exception e) {
@@ -293,6 +321,9 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
     }
 
     private static String formatPosition(String position) {
+        if(StringUtils.isEmpty(position)){
+            return "";
+        }
         String[] coords = position.split(",");
         double lat = Double.parseDouble(coords[0]);
         double lon = Double.parseDouble(coords[1]);

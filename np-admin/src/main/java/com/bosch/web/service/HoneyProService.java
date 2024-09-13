@@ -1,11 +1,8 @@
 package com.bosch.web.service;
 
-import com.bosch.web.domain.HoneyPro;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.bosch.web.domain.HoneyType;
+import com.bosch.web.domain.HoneyPro;
 import com.bosch.web.domain.dto.HoneyProDTO;
-import com.bosch.web.domain.dto.HoneyTypeDTO;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,6 +24,8 @@ public interface HoneyProService extends IService<HoneyPro> {
     List<HoneyPro> getList(HoneyProDTO dto);
 
     List<HoneyPro> getToken(String token);
+
+    List<HoneyPro> getAToken(String token);
 
     int deleteAreaByIds(Integer[] ids);
 

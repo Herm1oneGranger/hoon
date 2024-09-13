@@ -1,15 +1,12 @@
 package com.bosch.web.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.util.Date;
-
+import com.baomidou.mybatisplus.annotation.*;
 import com.bosch.common.annotation.Excel;
 import com.bosch.common.core.domain.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * 
@@ -18,6 +15,30 @@ import lombok.Data;
 @TableName(value ="honey_mail_detail")
 @Data
 public class HoneyMailDetail extends BaseEntity {
+
+    /** 创建者 */
+
+
+    @Excel(name = "创建者")
+    private String createBy;
+
+    /** 创建时间 */
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "创建时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+    /** 更新者 */
+    @TableField(fill = FieldFill.UPDATE)
+
+    @Excel(name = "更新者")
+    private String updateBy;
+
+    /** 更新时间 */
+    @TableField(fill = FieldFill.UPDATE)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "更新时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
     /**
      * 
      */

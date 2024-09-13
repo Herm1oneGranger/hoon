@@ -188,9 +188,10 @@ public class SysLoginService
 
 //                    response.sendRedirect(loginUrl + "?token=" + token);
                 } else {
-//                    log.error("Can not find user in system！\n" + jsonObject.get("error_description"));
+                    log.error("Can not find user in system！: \n" + ntAccount);
 //                    response.sendRedirect(noRoleUrl);
-                    throw new ServiceException("账号："+ntAccount+"不在库中，请联系管理员添加");
+                    //throw new ServiceException("账号："+ntAccount+"不在库中，请联系管理员添加");
+                    response.sendRedirect("https://setsantifake.honeywell.com.cn/401" + "?message=" + "Account: "+ntAccount+" does not exist, please contact the administrator to add it");
                 }
 
 //                String ntAccount = userInoResObject.get("sub").toString().split("@")[0];

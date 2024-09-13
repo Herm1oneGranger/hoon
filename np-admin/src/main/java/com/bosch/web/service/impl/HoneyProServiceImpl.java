@@ -34,6 +34,7 @@ public class HoneyProServiceImpl extends ServiceImpl<HoneyProMapper, HoneyPro>
 
     @Autowired
     private HoneyTypeMapper typeMapper;
+
     public String checkDuplicates(List<HoneyPro> doList) {
         if (CollectionUtils.isNotEmpty(doList)) {
             for (HoneyPro honeyPro : doList) {
@@ -43,8 +44,8 @@ public class HoneyProServiceImpl extends ServiceImpl<HoneyProMapper, HoneyPro>
                         .eq(HoneyType::getDeleteFlag, "0");
 
                 HoneyType honeyType = typeMapper.selectOne(typeWrapper);
-                if (null==honeyType){
-                    return "物料类别不存在：" +honeyPro.getMaterialCode();
+                if (null == honeyType) {
+                    return "物料类别不存在：" + honeyPro.getMaterialCode();
                 }
 
 
@@ -56,11 +57,11 @@ public class HoneyProServiceImpl extends ServiceImpl<HoneyProMapper, HoneyPro>
                         .eq(HoneyPro::getDeleteFlag, "0");
                 HoneyPro one = this.getOne(queryWrapper);
                 // 判断数据库中是否存在相同的记录
-                if (one!=null && one.getId()!=honeyPro.getId()){
-                    return "存在重复数据 "+"物料号:"+honeyPro.getMaterial() +
-                            " 订单号:"+honeyPro.getSo()+
-                            " 行号:"+honeyPro.getItemNo()+
-                            " 订单序列号:"+honeyPro.getOrderNo();
+                if (one != null && one.getId() != honeyPro.getId()) {
+                    return "存在重复数据 " + "物料号:" + honeyPro.getMaterial() +
+                            " 订单号:" + honeyPro.getSo() +
+                            " 行号:" + honeyPro.getItemNo() +
+                            " 订单序列号:" + honeyPro.getOrderNo();
                 }
 
             }
@@ -128,6 +129,11 @@ public class HoneyProServiceImpl extends ServiceImpl<HoneyProMapper, HoneyPro>
     }
 
     @Override
+    public List<HoneyPro> getAToken(String token) {
+        List<HoneyPro> list = mapper.getAToken(token);
+        return list;
+    }
+    @Override
     public int deleteAreaByIds(Integer[] ids) {
         return mapper.deleteAreaByIds(ids);
     }
@@ -141,6 +147,8 @@ public class HoneyProServiceImpl extends ServiceImpl<HoneyProMapper, HoneyPro>
 
     public int updateStatus(HoneyProDTO dto) {
         HoneyPro honeyPro = BeanConverUtil.conver(dto, HoneyPro.class);
+
+
         //判断人员权限
         int i = mapper.updateStatus(honeyPro);
         return i;

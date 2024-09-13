@@ -14,6 +14,7 @@ import com.bosch.web.service.HoneyProService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -140,9 +141,16 @@ public class HoneyProController extends BaseController {
     //@PreAuthorize("@ss.hasRole('admin')")
     public AjaxResult updateStatus(@RequestBody HoneyProDTO dto ) {
 
-        int i = honeyProService.updateStatus(dto);
+        //获取判断是否有已激活
+        List<HoneyPro> list = honeyProService.getAToken(dto.getToken());
+        if (CollectionUtils.isEmpty(list)){
+            int i = honeyProService.updateStatus(dto);
 
-        return toAjax(i);
+            return toAjax(i);
+        }else {
+            return error("token："+dto.getToken()+"已激活");
+        }
+
     }
 
     @ApiOperation("删除产品信息")
