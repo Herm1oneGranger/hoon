@@ -1,7 +1,5 @@
 package com.bosch.web.constant;
 
-import io.jsonwebtoken.Claims;
-
 /**
  * msg常量信息
  * 
@@ -21,9 +19,9 @@ public class MsgConstants
 
     public static final String IQASUCCESS = "Success";
 
-    public static final String ALOSUCCESS = "aloSuccess";
-    public static final String ALOFAIL = "aloFail";
-    public static final String ALOTIMEFAIL = "aloTimeFail";
+    public static final String ALOSUCCESS = "True";
+    public static final String ALOFAIL = "Fake";
+    public static final String ALOTIMEFAIL = "Fake";
     public static final String ALOSUCCESSTEXT = "算法校验成功";
     public static final String Retry = "Retry";
     public static final String TEXTURESUCCESS = "200";

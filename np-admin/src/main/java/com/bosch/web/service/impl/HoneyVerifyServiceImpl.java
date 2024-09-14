@@ -152,7 +152,7 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
 
         // 创建请求实体
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
+        logger.info("发起纹理请求："+ JSON.toJSONString(body));
         // 发送请求
         ResponseEntity<String> response = restTemplate.exchange(URL, HttpMethod.POST, requestEntity, String.class);
 

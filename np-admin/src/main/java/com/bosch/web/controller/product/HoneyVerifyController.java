@@ -260,7 +260,7 @@ public class HoneyVerifyController extends BaseController {
             HoneyVerify honeyVerify=new HoneyVerify();
             if (null==loginUser){
                 honeyVerify = service.insertHoneyGetId(honeyVerifyDTO);
-                vo.setReocrdId(honeyVerify.getId().intValue());
+                vo.setRecordId(honeyVerify.getId().intValue());
                 logger.info("扫码校验：", JSON.toJSONString(vo));
             }
 

@@ -59,7 +59,6 @@ public class HoneyProExcel {
     /**
      * 
      */
-    @Excel(name = "描述")
     @TableField(value = "des")
     private String des;
 

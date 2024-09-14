@@ -2,8 +2,6 @@ package com.bosch.web.domain.vo;
 
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * @TableName p_verify
  */
@@ -15,5 +13,5 @@ public class HoneyVerifyVO {
 
     private String msg;
 
-    private Integer reocrdId;
+    private Integer recordId;
 }

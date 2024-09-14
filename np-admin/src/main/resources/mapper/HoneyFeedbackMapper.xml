@@ -54,7 +54,7 @@
         <if test="proId != null">and f.pro_id  = #{proId} </if>
         <if test="recordId != null ">and f.record_id  = #{recordId} </if>
         <if test="status != null ">and f.status  = #{status} </if>
-
+        order by  f.create_time desc
 
 
     </select>

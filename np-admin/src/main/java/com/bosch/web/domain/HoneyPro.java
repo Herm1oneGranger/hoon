@@ -1,12 +1,13 @@
 package com.bosch.web.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.bosch.common.annotation.Excel;
-import com.bosch.common.core.domain.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * 产品信息
@@ -14,7 +15,41 @@ import lombok.Data;
  */
 @TableName(value ="honey_pro")
 @Data
-public class HoneyPro extends BaseEntity {
+public class HoneyPro  {
+    /** 搜索值 */
+    @JsonIgnore
+    @TableField(exist = false)
+    private String searchValue;
+
+    /** 创建者 */
+    @TableField(fill = FieldFill.INSERT)
+    @ApiModelProperty(value = "创建者")
+
+    private String createBy;
+
+    /** 创建时间 */
+    @TableField(fill = FieldFill.INSERT)
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    @Excel(name = "创建时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+    /** 更新者 */
+    @TableField(fill = FieldFill.UPDATE)
+    @ApiModelProperty(value = "更新者")
+//    @Excel(name = "更新者")
+    private String updateBy;
+
+    /** 更新时间 */
+    @TableField(fill = FieldFill.UPDATE)
+    @ApiModelProperty(value = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    @Excel(name = "更新时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
+
+    /** 备注 */
+    @ApiModelProperty(value = "备注")
+    private String remark;
     /**
      * 产品ID
      */
@@ -66,21 +101,20 @@ public class HoneyPro extends BaseEntity {
     /**
      * 
      */
-    @Excel(name = "un")
+
     @TableField(value = "un")
     private String un;
 
     /**
      * 
      */
-    @Excel(name = "描述")
     @TableField(value = "des")
     private String des;
 
     /**
      * 
      */
-    @Excel(name = "sold_to")
+
     @TableField(value = "sold_to")
     private String soldTo;
 
@@ -99,14 +133,14 @@ public class HoneyPro extends BaseEntity {
     /**
      * 
      */
-    @Excel(name = "ship_to")
+
     @TableField(value = "ship_to")
     private String shipTo;
 
     /**
      * 
      */
-    @Excel(name = "po_no")
+
     @TableField(value = "po_no")
     private String poNo;
 

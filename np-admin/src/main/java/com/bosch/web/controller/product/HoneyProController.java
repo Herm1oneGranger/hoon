@@ -82,7 +82,7 @@ public class HoneyProController extends BaseController {
         list.forEach(r->
         {
             //域名?token=
-            r.setToken("setsantifake.honeywell.com.cn?token="+r.getToken());
+            r.setToken("setsantifake.honeywell.com.cn/cert?token="+r.getToken());
         });
         ExcelUtil<HoneyPro> util = new ExcelUtil<HoneyPro>(HoneyPro.class);
         util.exportExcel(response, list, "产品列表数据");
@@ -146,9 +146,9 @@ public class HoneyProController extends BaseController {
         if (CollectionUtils.isEmpty(list)){
             int i = honeyProService.updateStatus(dto);
 
-            return toAjax(i);
+            return i>0?success("激活成功"):success("激活失败，请重试");
         }else {
-            return error("token："+dto.getToken()+"已激活");
+            return success("产品已激活");
         }
 
     }

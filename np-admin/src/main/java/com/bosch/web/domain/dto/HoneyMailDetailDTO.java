@@ -1,10 +1,5 @@
 package com.bosch.web.domain.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.bosch.common.core.domain.BaseEntity;
 import com.bosch.common.core.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -52,7 +47,8 @@ public class HoneyMailDetailDTO extends PageDomain {
     @ApiModelProperty(value = "content")
     private String content;
 
-
+    @ApiModelProperty(value = "remark")
+    private String remark;
 
 
     /**
