@@ -82,7 +82,7 @@ public class HoneyProController extends BaseController {
         list.forEach(r->
         {
             //域名?token=
-            r.setToken("setsantifake.honeywell.com.cn/cert?token="+r.getToken());
+            r.setToken("setsantifake.honeywell.com.cn/cert/cert?token="+r.getToken());
         });
         ExcelUtil<HoneyPro> util = new ExcelUtil<HoneyPro>(HoneyPro.class);
         util.exportExcel(response, list, "产品列表数据");
