@@ -14,6 +14,7 @@ import com.bosch.web.service.PImagesService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,7 +51,6 @@ public class HoneyFeedBackController extends BaseController {
      *
      */
     @ApiOperation("新增")
-
     @PostMapping("/add")
     public AjaxResult add(@RequestBody HoneyFeedbackDTO dto) {
 
@@ -66,6 +66,7 @@ public class HoneyFeedBackController extends BaseController {
      */
     @ApiOperation("更新")
     @Log(title = logTitle, businessType = BusinessType.UPDATE)
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,marketing')")
     @PostMapping("/update")
     public AjaxResult update(@RequestBody HoneyFeedbackDTO dto) {
         if (dto.getId()!=null){
@@ -83,6 +84,7 @@ public class HoneyFeedBackController extends BaseController {
 
     @ApiOperation("删除")
     @Log(title = logTitle, businessType = BusinessType.UPDATE)
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,marketing')")
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Integer[] ids) {
         return toAjax(service.deleteAreaByIds(ids));

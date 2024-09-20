@@ -14,6 +14,7 @@ import com.bosch.web.service.HoneyProService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,6 +44,7 @@ public class HoneyProController extends BaseController {
      * 获取校验信息
      */
     @ApiOperation("获取产品列表")
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,scheduling')")
     @GetMapping("/list")
     public TableDataInfo list(HoneyProDTO dto)
     {
@@ -52,6 +54,7 @@ public class HoneyProController extends BaseController {
     }
     @ApiOperation("导入")
     @Log(title = "产品管理", businessType = BusinessType.IMPORT)
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,scheduling')")
     @PostMapping("/importData")
     public AjaxResult importData(MultipartFile file) throws Exception
     {
@@ -75,6 +78,7 @@ public class HoneyProController extends BaseController {
 
     @ApiOperation("导出产品列表")
     @Log(title = logTitle, businessType = BusinessType.EXPORT)
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,scheduling')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, @RequestBody HoneyProDTO dto) {
         List<HoneyPro> list = honeyProService.getList(dto);
@@ -93,7 +97,7 @@ public class HoneyProController extends BaseController {
      * 新增产品
      */
     @ApiOperation("新增产品信息")
-    //@PreAuthorize("@ss.hasPermi('product:add')")
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,scheduling')")
     @Log(title = logTitle, businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult add( @RequestBody HoneyProDTO dto) {
@@ -118,6 +122,7 @@ public class HoneyProController extends BaseController {
 
     @Log(title = logTitle, businessType = BusinessType.UPDATE)
     @PostMapping("/update")
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,scheduling')")
     public AjaxResult update(@RequestBody HoneyProDTO dto ) {
 
         //校验重复
@@ -138,7 +143,7 @@ public class HoneyProController extends BaseController {
 
     @Log(title = logTitle, businessType = BusinessType.UPDATE)
     @PostMapping("/updateStatus")
-    //@PreAuthorize("@ss.hasRole('admin')")
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,scheduling')")
     public AjaxResult updateStatus(@RequestBody HoneyProDTO dto ) {
 
         //获取判断是否有已激活
@@ -155,6 +160,7 @@ public class HoneyProController extends BaseController {
 
     @ApiOperation("删除产品信息")
     @Log(title = logTitle, businessType = BusinessType.UPDATE)
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,scheduling')")
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Integer[] ids) {
         return toAjax(honeyProService.deleteAreaByIds(ids));
@@ -162,6 +168,7 @@ public class HoneyProController extends BaseController {
 
     @ApiOperation("下载模板")
     @PostMapping("/importTemplate")
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,scheduling')")
     public void importTemplate(HttpServletResponse response)
     {
         ExcelUtil<HoneyProExcel> util = new ExcelUtil<HoneyProExcel>(HoneyProExcel.class);

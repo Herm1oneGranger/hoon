@@ -14,6 +14,7 @@ import com.bosch.web.utils.MailUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -70,7 +71,7 @@ public class HoneyMailDetailController extends BaseController {
 
     @ApiOperation("导出告警信息列表")
     @Log(title = logTitle, businessType = BusinessType.EXPORT)
-//    @PreAuthorize("@ss.hasPermi('honey:verify:export')")
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,marketing')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, HoneyMailDetailDTO dto) {
 //        startPage();
@@ -99,6 +100,7 @@ public class HoneyMailDetailController extends BaseController {
     @ApiOperation("更新")
     @Log(title = logTitle, businessType = BusinessType.UPDATE)
     @PostMapping("/update")
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,marketing')")
     public AjaxResult update(@RequestBody HoneyMailDetailDTO dto ) {
 
 

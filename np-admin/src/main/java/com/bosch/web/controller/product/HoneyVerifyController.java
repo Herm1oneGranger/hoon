@@ -32,6 +32,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -91,7 +92,7 @@ public class HoneyVerifyController extends BaseController {
 
     @ApiOperation("导出校验列表")
     @Log(title = logTitle, businessType = BusinessType.EXPORT)
-//    @PreAuthorize("@ss.hasPermi('honey:verify:export')")
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,marketing')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, @RequestBody HoneyVerifyDTO dto) {
 //        startPage();
@@ -105,7 +106,7 @@ public class HoneyVerifyController extends BaseController {
      *
      */
     @ApiOperation("新增校验结果")
-    //@PreAuthorize("@ss.hasPermi('product:add')")
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,marketing')")
     @Log(title = logTitle, businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult add(@RequestBody HoneyVerifyDTO dto) {
@@ -121,6 +122,7 @@ public class HoneyVerifyController extends BaseController {
      *
      */
     @ApiOperation("更新校验结果")
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,marketing')")
     @Log(title = logTitle, businessType = BusinessType.UPDATE)
     @PostMapping("/update")
     public AjaxResult update(@RequestBody HoneyVerifyDTO dto) {
