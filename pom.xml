@@ -272,7 +272,7 @@
                 <profiles.active>/home/dc/ico_img/</profiles.active>
                 <datasource.host>10.113.236.148:3306</datasource.host>
                 <python.url>http://localhost:8090</python.url>
-                <path.url>/home/h581177a</path.url>
+                <path.url>/home/h581177a/hon-antifake/hon-algo/images</path.url>
                 <feedback.url>https://setsantifake.honeywell.com.cn</feedback.url>
                 <datasource.user>rootuser</datasource.user>
                 <datasource.password>password</datasource.password>

@@ -57,7 +57,12 @@
         <if test="model != null and model != ''">and model  like concat('%', #{model}, '%')</if>
         <if test="shipTo != null and shipTo != ''">and ship_to  like concat('%', #{shipTo}, '%')</if>
         <if test="token != null and token != ''">and token  = #{token}</if>
+        <if test="so != null and so != ''">and so  = #{so}</if>
+        <if test="itemNo != null and itemNo != ''">and itemNo  = #{itemNo}</if>
 
+
+        <if test="createTimeStart != null">and create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
+        <if test="createTimeEnd != null">and create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
     </select>
 
     <select id="getToken" parameterType="com.bosch.web.domain.dto.HoneyProDTO" resultType="com.bosch.web.domain.HoneyPro">

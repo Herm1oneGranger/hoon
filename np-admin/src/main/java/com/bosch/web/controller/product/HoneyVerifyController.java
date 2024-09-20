@@ -265,7 +265,7 @@ public class HoneyVerifyController extends BaseController {
             }
 
             vo.setResult(totalResult);
-            logger.info("激活校验：", JSON.toJSONString(vo));
+
             return success(vo);
 
         } catch (IOException e) {
@@ -293,7 +293,7 @@ public class HoneyVerifyController extends BaseController {
         // 生成文件名
         String fileName = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".jpg";
         // 文件保存路径
-        String filePath = baseUrl+"/verify/" + fileName;
+        String filePath = baseUrl+"/activate/" + fileName;
         String showPath = "/images/"+fileName;
         // 检查并创建文件夹
         File file = new File(filePath);
@@ -349,6 +349,7 @@ public class HoneyVerifyController extends BaseController {
     @ApiOperation(value = "获取openid")
     @PostMapping(value = "/getOpenId")
     public R getOpenId(@RequestBody WxDTO dto) {
+        logger.info("获取openid："+JSON.toJSONString(dto));
         StringBuffer info = new StringBuffer(WxDTO.WX_LINK);
         info.append("appid=").append(WxDTO.APP_ID).append("&");
         info.append("secret=").append(WxDTO.SECRET).append("&");
@@ -362,7 +363,7 @@ public class HoneyVerifyController extends BaseController {
         RestTemplate restTemplate = new RestTemplate();
         String strbody = restTemplate.exchange(info.toString().replace("\"", ""), HttpMethod.GET, entity, String.class)
                 .getBody();
-
+        logger.info("获取openid结束："+strbody);
         return R.ok(JSON.parseObject(strbody));
     }
 
@@ -376,7 +377,7 @@ public class HoneyVerifyController extends BaseController {
             String originalFilename = file.getOriginalFilename();
             String fileName = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
             // 指定保存路径
-            String filePath =baseUrl+ "/feedback/"+fileName+originalFilename;
+            String filePath ="/home/h581177a/hon-antifake/feedback/"+fileName+originalFilename;
             // 检查并创建文件夹
             File fileP = new File(filePath);
             File dir = fileP.getParentFile();
@@ -386,7 +387,7 @@ public class HoneyVerifyController extends BaseController {
             // 文件保存路径
             String savePath = filePath ;
             //文件展示路径
-            String showPath = feedbackUrl+"/images/"+fileName+originalFilename;
+            String showPath = feedbackUrl+"/feedback/"+fileName+originalFilename;
             // 保存文件
             file.transferTo(new File(savePath));
             // 返回图片路径

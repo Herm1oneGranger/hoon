@@ -15,13 +15,13 @@ public class WxDTO extends BaseEntity {
     /**
      * appID
      */
-    public static final String APP_ID = "wx6f992f653bd01163";
-
+    //public static final String APP_ID = "wx6f992f653bd01163";
+    public static final String APP_ID = "wxb54c27a31ca992f3";
     /**
      * secret
      */
-    public static final String SECRET = "37ba80e30974dd3c78aced760915063f";
-
+    //public static final String SECRET = "37ba80e30974dd3c78aced760915063f";
+    public static final String SECRET = "8191aaf3cdfc03c79d240227d5e4fa83";
     /**
      * code
      */
