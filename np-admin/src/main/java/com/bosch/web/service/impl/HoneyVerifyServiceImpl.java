@@ -387,16 +387,17 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
             String month = entry.getKey();
             List<HoneyVerifyResultVO> monthlyResults = entry.getValue();
 
-             // 统计 totalResults 的数量
+             // 统计 totalResults 的数量 Manual
             long trueCount = monthlyResults.stream().filter(vo -> "true".equalsIgnoreCase(vo.getTotalResults())).count();
             long fakeCount = monthlyResults.stream().filter(vo -> "Fake".equalsIgnoreCase(vo.getTotalResults())).count();
+            long manualCount = monthlyResults.stream().filter(vo -> "Manual".equalsIgnoreCase(vo.getTotalResults())).count();
             long totalCount = monthlyResults.size();
 
             // 查找并更新结果中的相应月份
             for (HoneyDashVO honeyDashVO : result) {
                 if (honeyDashVO.getDate().equals(month)) {
                     honeyDashVO.setTrueNum((int) trueCount);
-                    honeyDashVO.setFakeNum((int) fakeCount);
+                    honeyDashVO.setFakeNum((int) fakeCount+(int) manualCount);
                     honeyDashVO.setTotal((int) totalCount);
                     break;
                 }
@@ -459,13 +460,16 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
         // 统计 totalResults 的数量
             long trueCount = quarterlyResults.stream().filter(vo -> "true".equalsIgnoreCase(vo.getTotalResults())).count();
             long fakeCount = quarterlyResults.stream().filter(vo -> "Fake".equalsIgnoreCase(vo.getTotalResults())).count();
+
+            long manualCount = quarterlyResults.stream().filter(vo -> "Manual".equalsIgnoreCase(vo.getTotalResults())).count();
+
             long totalCount = quarterlyResults.size();
 
         // 查找并更新结果中的相应季度
             for (HoneyDashVO honeyDashVO : result) {
                 if (honeyDashVO.getDate().equals(quarter)) {
                     honeyDashVO.setTrueNum((int) trueCount);
-                    honeyDashVO.setFakeNum((int) fakeCount);
+                    honeyDashVO.setFakeNum((int) fakeCount+(int) manualCount);
                     honeyDashVO.setTotal((int) totalCount);
                     break;
                 }
@@ -502,13 +506,16 @@ public class HoneyVerifyServiceImpl extends ServiceImpl<HoneyVerifyMapper, Honey
             // 统计 totalResults 的数量
             long trueCount = yearlyResults.stream().filter(vo -> "true".equalsIgnoreCase(vo.getTotalResults())).count();
             long fakeCount = yearlyResults.stream().filter(vo -> "Fake".equalsIgnoreCase(vo.getTotalResults())).count();
+
+            long manualCount = yearlyResults.stream().filter(vo -> "Manual".equalsIgnoreCase(vo.getTotalResults())).count();
+
             long totalCount = yearlyResults.size();
 
             // 构建 HoneyDashVO
             HoneyDashVO honeyDashVO = new HoneyDashVO();
             honeyDashVO.setDate(String.valueOf(year)); // 直接设置为年份
             honeyDashVO.setTrueNum((int) trueCount);
-            honeyDashVO.setFakeNum((int) fakeCount);
+            honeyDashVO.setFakeNum((int) fakeCount+(int) manualCount);
             honeyDashVO.setTotal((int) totalCount);
 
             result.add(honeyDashVO);

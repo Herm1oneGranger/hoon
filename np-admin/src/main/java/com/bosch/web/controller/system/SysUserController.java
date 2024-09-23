@@ -6,8 +6,10 @@ import com.bosch.common.core.domain.AjaxResult;
 import com.bosch.common.core.domain.entity.SysDept;
 import com.bosch.common.core.domain.entity.SysRole;
 import com.bosch.common.core.domain.entity.SysUser;
+import com.bosch.common.core.domain.entity.SysUserNoPasswordVO;
 import com.bosch.common.core.page.TableDataInfo;
 import com.bosch.common.enums.BusinessType;
+import com.bosch.common.utils.BeanConverUtil;
 import com.bosch.common.utils.SecurityUtils;
 import com.bosch.common.utils.StringUtils;
 import com.bosch.common.utils.poi.ExcelUtil;
@@ -103,7 +105,9 @@ public class SysUserController extends BaseController
         if (StringUtils.isNotNull(userId))
         {
             SysUser sysUser = userService.selectUserById(userId);
-            ajax.put(AjaxResult.DATA_TAG, sysUser);
+
+            SysUserNoPasswordVO conver = BeanConverUtil.conver(sysUser, SysUserNoPasswordVO.class);
+            ajax.put(AjaxResult.DATA_TAG, conver);
             ajax.put("postIds", postService.selectPostListByUserId(userId));
             ajax.put("roleIds", sysUser.getRoles().stream().map(SysRole::getRoleId).collect(Collectors.toList()));
         }

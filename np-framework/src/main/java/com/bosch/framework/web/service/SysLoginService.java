@@ -32,6 +32,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
@@ -184,7 +185,14 @@ public class SysLoginService
 
                     String token = tokenService.createToken(loginUser);
                     log.info("SsoLogin:" + "token=" + token);
-                    response.sendRedirect("https://setsantifake.honeywell.com.cn/ssoLogin" + "?token=" + token);
+                    Cookie cookie=new Cookie("access_token",token);
+                    cookie.setMaxAge(30*60);
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
+//                    response.sendRedirect("https://setsantifake.honeywell.com.cn/ssoLogin" + "?code=" + token);
+
+                    response.sendRedirect("https://setsantifake.honeywell.com.cn");
+
 
 //                    response.sendRedirect(loginUrl + "?token=" + token);
                 } else {

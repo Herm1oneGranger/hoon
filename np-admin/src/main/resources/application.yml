@@ -31,12 +31,16 @@ server:
     # tomcat的URI编码
     uri-encoding: UTF-8
     # 连接数满后的排队数，默认为100
-    accept-count: 1000
+    accept-count: 100
     threads:
       # tomcat最大线程数，默认为200
-      max: 800
+      max: 200
       # Tomcat启动初始化的线程数，默认值10
       min-spare: 100
+    connection-timeout: 2000 #20s未收到完整请求关闭连接
+    max-keep-alive-requests: 100 #每个链接保留100次请求
+    keep-alive-timeout: 5000 #保持链接最大时间为5秒
+    max-connections: 1000
 
 # 日志配置
 logging:
