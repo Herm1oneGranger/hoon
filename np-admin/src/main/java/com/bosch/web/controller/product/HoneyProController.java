@@ -57,11 +57,11 @@ public class HoneyProController extends BaseController {
     @ApiOperation("获取产品")
     @PreAuthorize("@ss.hasAnyRoles('administer,admin,scheduling')")
     @GetMapping("/getByToken")
-    public R getByToken(@RequestParam String token) {
+    public R getByToken(@RequestParam("code") String code) {
 
-        List<HoneyPro> list = honeyProService.getToken(token);
+        List<HoneyPro> list = honeyProService.getToken(code);
         if (CollectionUtils.isEmpty(list)){
-            return R.fail("根据token："+token+" 未查询到相关产品信息");
+            return R.fail("根据二维码编号："+code+" 未查询到相关产品信息");
         }
         HoneyPro honeyPro = list.get(0);
         return R.ok(honeyPro);
