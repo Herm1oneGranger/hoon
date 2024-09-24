@@ -58,7 +58,7 @@
         <if test="shipTo != null and shipTo != ''">and ship_to  like concat('%', #{shipTo}, '%')</if>
         <if test="token != null and token != ''">and token  = #{token}</if>
         <if test="so != null and so != ''">and so  = #{so}</if>
-        <if test="itemNo != null and itemNo != ''">and itemNo  = #{itemNo}</if>
+        <if test="itemNo != null and itemNo != ''">and item_no  = #{itemNo}</if>
 
 
         <if test="createTimeStart != null">and create_time <![CDATA[ >= ]]> #{createTimeStart}</if>

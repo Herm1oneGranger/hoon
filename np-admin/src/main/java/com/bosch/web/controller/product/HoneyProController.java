@@ -3,6 +3,7 @@ package com.bosch.web.controller.product;
 import com.bosch.common.annotation.Log;
 import com.bosch.common.core.controller.BaseController;
 import com.bosch.common.core.domain.AjaxResult;
+import com.bosch.common.core.domain.R;
 import com.bosch.common.core.page.TableDataInfo;
 import com.bosch.common.enums.BusinessType;
 import com.bosch.common.utils.BeanConverUtil;
@@ -52,6 +53,20 @@ public class HoneyProController extends BaseController {
         List<HoneyPro> list = honeyProService.getList(dto);
         return getDataTable(list);
     }
+
+    @ApiOperation("获取产品")
+    @PreAuthorize("@ss.hasAnyRoles('administer,admin,scheduling')")
+    @GetMapping("/getByToken")
+    public R getByToken(@RequestParam String token) {
+
+        List<HoneyPro> list = honeyProService.getToken(token);
+        if (CollectionUtils.isEmpty(list)){
+            return R.fail("根据token："+token+" 未查询到相关产品信息");
+        }
+        HoneyPro honeyPro = list.get(0);
+        return R.ok(honeyPro);
+    }
+
     @ApiOperation("导入")
     @Log(title = "产品管理", businessType = BusinessType.IMPORT)
     @PreAuthorize("@ss.hasAnyRoles('administer,admin,scheduling')")
