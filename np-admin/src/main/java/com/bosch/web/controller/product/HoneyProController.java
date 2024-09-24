@@ -10,6 +10,7 @@ import com.bosch.common.utils.BeanConverUtil;
 import com.bosch.common.utils.poi.ExcelUtil;
 import com.bosch.web.domain.HoneyPro;
 import com.bosch.web.domain.HoneyProExcel;
+import com.bosch.web.domain.dto.CodeDTO;
 import com.bosch.web.domain.dto.HoneyProDTO;
 import com.bosch.web.service.HoneyProService;
 import io.swagger.annotations.Api;
@@ -56,12 +57,13 @@ public class HoneyProController extends BaseController {
 
     @ApiOperation("获取产品")
     @PreAuthorize("@ss.hasAnyRoles('administer,admin,scheduling')")
-    @GetMapping("/getByToken")
-    public R getByToken(@RequestParam("code") String code) {
+    @PostMapping("/getByToken")
+    public R getByToken(@RequestBody CodeDTO dto) {
 
-        List<HoneyPro> list = honeyProService.getToken(code);
+        List<HoneyPro> list = honeyProService.getToken(dto.getCode());
         if (CollectionUtils.isEmpty(list)){
-            return R.fail("根据二维码编号："+code+" 未查询到相关产品信息");
+            logger.info("根据二维码编号："+dto.getCode()+" 未查询到相关产品信息");
+            return R.fail( "根据二维码编号："+dto.getCode()+" 未查询到相关产品信息");
         }
         HoneyPro honeyPro = list.get(0);
         return R.ok(honeyPro);

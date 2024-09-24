@@ -85,7 +85,7 @@ public class HoneyDashController extends BaseController {
     }
     @ApiOperation("通过产品获取生产时间")
     @GetMapping("/selectDate")
-    public R selectDate(@RequestParam String materialCode) {
+    public R selectDate(@RequestParam("materialCode") String materialCode) {
 
         List<String> list = proService.selectDate(materialCode);
         return R.ok(list);
