@@ -217,7 +217,7 @@ public class HoneyVerifyController extends BaseController {
         String fileName = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".jpg";
         // 文件保存路径
         String filePath = baseUrl+"/verify/" + fileName;
-        String showPath = "/images/"+fileName;
+        String showPath = "https://setsantifake.honeywell.com.cn/images/"+fileName;
         // 检查并创建文件夹
         File file = new File(filePath);
         File dir = file.getParentFile();
