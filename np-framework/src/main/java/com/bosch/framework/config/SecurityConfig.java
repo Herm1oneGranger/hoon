@@ -127,11 +127,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/honey/verify/verify").permitAll()
                 .antMatchers("/honey/verify/verify1").permitAll()
                 .antMatchers("/honey/verify/getOpenId").permitAll()
+                .antMatchers("/honey/product/getByToken").permitAll()
                 .antMatchers("/ssoLogin").permitAll()
                 .antMatchers("/ssoLogin1").permitAll()
                 .antMatchers("/product/verify/getInfo/*").permitAll()
                 .antMatchers("/product/verify/getProductPicture/*").permitAll()
                 .antMatchers("/product/verify/getOpenId").permitAll()
+
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().authenticated()
                 .and()
