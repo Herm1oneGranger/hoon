@@ -56,7 +56,6 @@ public class HoneyProController extends BaseController {
     }
 
     @ApiOperation("获取产品")
-    @PreAuthorize("@ss.hasAnyRoles('administer,admin,scheduling')")
     @PostMapping("/getByToken")
     public R getByToken(@RequestBody CodeDTO dto) {
 
