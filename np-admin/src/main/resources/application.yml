@@ -39,7 +39,7 @@ server:
       min-spare: 100
     connection-timeout: 2000 #20s未收到完整请求关闭连接
     max-keep-alive-requests: 100 #每个链接保留100次请求
-    keep-alive-timeout: 60000 #保持链接最大时间为5秒
+    keep-alive-timeout: 60000 #保持链接最大时间为60秒
     max-connections: 1000
 
 # 日志配置
