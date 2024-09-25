@@ -100,7 +100,7 @@ public class HoneyFeedback  {
 
     /** 创建时间 */
     @ApiModelProperty(value = "创建时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Excel(name = "创建时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
@@ -113,7 +113,7 @@ public class HoneyFeedback  {
     /** 更新时间 */
     @TableField(fill = FieldFill.UPDATE)
     @ApiModelProperty(value = "更新时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Excel(name = "更新时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
